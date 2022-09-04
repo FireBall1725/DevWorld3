@@ -1,0 +1,9 @@
+{
+  "devworld.menu.new": "Nouveau Monde",
+  "devworld.menu.load": "Monde Ouvert",
+  "devworld.menu.delete": "Retirer le Monde",
+
+  "devworld.title": "Le monde des dév 3",
+
+  "devworld.hover.delete": "Appuyez deux fois sur [MAJUSCULE GAUCHE] pour activer la suppression."
+}

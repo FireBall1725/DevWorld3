@@ -1,8 +1,10 @@
 package ca.fireball1725.devworld.client.events;
 
 import ca.fireball1725.devworld.util.DevWorldUtils;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -12,6 +14,8 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 public class DevWorldClientEvents {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -65,7 +69,18 @@ public class DevWorldClientEvents {
                 buttonLoad.visible = false;
             }
 
-            //GuiComponent.drawCenteredString();
+            // Set the initial x and y positions for the text
+            int textY = event.getScreen().height / 4 + 38;
+            int textX = event.getScreen().width / 2 + 104 + (84 / 2);
+
+            // Render the mod name on the screen
+            PoseStack poseStack = new PoseStack();
+            GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font, Component.translatable("devworld.title"), textX, textY, 16777215);
+
+            // Render tooltip if over the delete button
+            if (buttonDelete.isHoveredOrFocused() && buttonDelete.visible && !buttonDelete.active) {
+                titleScreen.renderTooltip(poseStack, Component.translatable("devworld.hover.delete"), event.getMouseX(), event.getMouseY());
+            }
         }
     }
 
@@ -76,11 +91,8 @@ public class DevWorldClientEvents {
     public void eventScreenInit(ScreenEvent.Init event) {
         if (event.getScreen() instanceof TitleScreen) {
             // Set the initial x and y positions
-            int buttonY = event.getScreen().height / 4 + 38;
+            int buttonY = event.getScreen().height / 4 + 48;
             int buttonX = event.getScreen().width / 2 + 104;
-
-            PlainTextButton devWorldText = new PlainTextButton(buttonX, buttonY, 84, 20, Component.literal("DevWorld 3"), button -> {}, Minecraft.getInstance().font);
-            buttonY += 10;
 
             // Create the create dev world button
             buttonCreate = new Button(buttonX, buttonY, 84, 20, Component.translatable("devworld.menu.new"), button -> {
@@ -115,7 +127,6 @@ public class DevWorldClientEvents {
             keyShiftCount = 0;
 
             // Add the screen objects
-            event.addListener(devWorldText);
             event.addListener(buttonCreate);
             event.addListener(buttonLoad);
             event.addListener(buttonDelete);
