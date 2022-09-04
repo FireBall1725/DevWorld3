@@ -36,7 +36,7 @@ jobs:
           name: "Build"
           command: |
             export CI_VERSION=`cat CI_VERSION`
-            ./gradlew build
+            gradle build
       - store_artifacts:
           path: build/libs
           destination: artifact-file
@@ -79,25 +79,25 @@ jobs:
           name: "Build"
           command: |
             export CI_VERSION=`cat CI_VERSION`
-            ./gradlew build
+            gradle build
 
 #      - run:
 #          name: "Publish to Artifactory"
 #          command: |
 #            export CI_VERSION=`cat CI_VERSION`
-#            ./gradlew publishArtifactoryPublicationToArtifactoryRepository
+#            gradle publishArtifactoryPublicationToArtifactoryRepository
 
       - run:
           name: "Publish to Curse"
           command: |
             export CI_VERSION=`cat CI_VERSION`
-            ./gradlew curseforge
+            gradle curseforge
 
       - run:
           name: "Publish to GitHub"
           command: |
             export CI_VERSION=`cat CI_VERSION`
-            ./gradlew githubRelease
+            gradle githubRelease
 
 workflows:
   version: 2
