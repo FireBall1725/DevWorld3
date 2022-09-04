@@ -81,11 +81,11 @@ jobs:
             export CI_VERSION=`cat CI_VERSION`
             gradle build
 
-      - run:
-          name: "Publish to Curse"
-          command: |
-            export CI_VERSION=`cat CI_VERSION`
-            gradle curseforge
+#      - run:
+#          name: "Publish to Curse"
+#          command: |
+#            export CI_VERSION=`cat CI_VERSION`
+#            gradle curseforge
 
       - run:
           name: "Publish to GitHub"
