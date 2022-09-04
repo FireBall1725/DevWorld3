@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'info.u-team.curse_gradle_uploader:curse_gradle_uploader:1.5.0'
+        classpath 'com.github.breadmoirai:github-release:2.3.7'
     }
 }
 
@@ -12,9 +13,10 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'com.github.breadmoirai.github-release' version '2.3.7'
 }
 
-version = '3.0.1-1.19'
+version = System.getenv("CI_VERSION") ?: "0.0.0"
 group = 'ca.fireball1725.devworld' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'devworld'
 
@@ -100,7 +102,7 @@ jar {
                 "Specification-Vendor"    : "FireBall1725",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : "${project_name}",
-                "Implementation-Version"  : "${project_version}",
+                "Implementation-Version"  : "${project.version}",
                 "Implementation-Vendor"   : "FireBall1725",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
@@ -140,4 +142,29 @@ curseforge {
 
         }
     }
+}
+
+apply plugin: 'com.github.breadmoirai.github-release'
+
+String readChangelogString(String filePath) {
+    File file = new File(filePath)
+    if(file.exists()) {
+        return file.text
+    }
+
+    return ""
+}
+
+githubRelease {
+    token System.getenv("GITHUB_TOKEN") ?: "InvalidP@ssword"
+    owner System.getenv("CIRCLE_PROJECT_USERNAME") ?: ""
+    repo System.getenv("CIRCLE_PROJECT_REPONAME") ?: ""
+    targetCommitish = System.getenv("CIRCLE_SHA1") ?: ""
+    body {
+        return readChangelogString("CHANGELOG.md")
+    }
+    releaseAssets jar.destinationDir.listFiles()
+    overwrite true
+    tagName = project.version
+    releaseName = "v${project.version}"
 }
