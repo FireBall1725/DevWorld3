@@ -6,7 +6,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -14,8 +13,6 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
-
-import java.util.List;
 
 public class DevWorldClientEvents {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -59,7 +56,7 @@ public class DevWorldClientEvents {
      */
     public void eventScreenRenderPost(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof TitleScreen titleScreen) {
-            if (devWorldUtils.saveExist()) {
+            if (devWorldUtils.saveExists()) {
                 buttonCreate.visible = false;
                 buttonDelete.visible = true;
                 buttonLoad.visible = true;

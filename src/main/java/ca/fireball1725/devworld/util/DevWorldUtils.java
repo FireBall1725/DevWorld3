@@ -56,27 +56,21 @@ public class DevWorldUtils {
     private static final Logger LOGGER = LogUtils.getLogger();
 
 
-    // Create the world
+    /**
+     * Create a new dev world
+     * @throws Exception if there is an issue with the save
+     */
     public void createDevWorld() throws Exception {
         this.resultFolder = this.worldName.trim();
         Minecraft.getInstance().setScreen(null);
-        queueLoadScreen(minecraft);
+        queueLoadScreen();
 
         Optional<LevelStorageSource.LevelStorageAccess> optional = this.createNewWorldDirectory();
         if (optional.isPresent()) {
             this.removeTempDataPackDir();
 
-
-
-
-
             PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource());
             WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, new DataPackConfig(ImmutableList.of("vanilla"), ImmutableList.of()));
-
-
-
-
-
 
             CompletableFuture<WorldCreationContext> completableFuture = WorldLoader.load(worldloader$initconfig, (resourceManager, dataPackConfig) -> {
                 RegistryAccess.Frozen registryaccess$frozen = RegistryAccess.builtinCopy().freeze();
@@ -86,28 +80,25 @@ public class DevWorldUtils {
                 closeableResourceManager.close();
                 return new WorldCreationContext(levelSeed, Lifecycle.stable(), registryAccess, datapackResources);
             }, Util.backgroundExecutor(), this.minecraft);
-
             this.minecraft.managedBlock(completableFuture::isDone);
 
             WorldCreationContext worldCreationContext = completableFuture.get();
-
-
-
             FlatLevelGeneratorSettings flatLevelGeneratorSettings = PresetFlatWorldScreen.fromString(worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), worldCreationContext.registryAccess().registryOrThrow(Registry.STRUCTURE_SET_REGISTRY), "minecraft:bedrock,3*minecraft:stone,130*minecraft:sandstone;minecraft:desert;", new FlatLevelGeneratorSettings(Optional.empty(), worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)));
-
-
             worldCreationContext = worldCreationContext.withSettings(flatWorldGenerator(worldCreationContext.registryAccess(), worldCreationContext.worldGenSettings(), flatLevelGeneratorSettings));
-
-
-
-            WorldCreationContext finaltest = createFinalSettings(false, worldCreationContext);
+            WorldCreationContext finalWorldCreationContext = createFinalSettings(false, worldCreationContext);
 
             LevelSettings levelSettings = this.createLevelSettings();
-            WorldData worldData = new PrimaryLevelData(levelSettings, finaltest.worldGenSettings(), finaltest.worldSettingsStability());
-            this.minecraft.createWorldOpenFlows().createLevelFromExistingSettings(optional.get(), finaltest.dataPackResources(), finaltest.registryAccess(), worldData);
+            WorldData worldData = new PrimaryLevelData(levelSettings, finalWorldCreationContext.worldGenSettings(), finalWorldCreationContext.worldSettingsStability());
+            this.minecraft.createWorldOpenFlows().createLevelFromExistingSettings(optional.get(), finalWorldCreationContext.dataPackResources(), finalWorldCreationContext.registryAccess(), worldData);
         }
     }
 
+    /**
+     *
+     * @param isHardCore
+     * @param worldCreationContext
+     * @return
+     */
     public WorldCreationContext createFinalSettings(boolean isHardCore, WorldCreationContext worldCreationContext) {
         OptionalLong optionallong = WorldGenSettings.parseSeed("0");
         return worldCreationContext.withSettings((p_233071_) -> {
@@ -115,16 +106,30 @@ public class DevWorldUtils {
         });
     }
 
-    private void queueLoadScreen(Minecraft minecraft) {
-        minecraft.forceSetScreen(new GenericDirtMessageScreen(DevWorldUtils.PREPARING_WORLD_DATA));
+    /**
+     * Show loading screen
+     */
+    private void queueLoadScreen() {
+        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(DevWorldUtils.PREPARING_WORLD_DATA));
     }
 
-    private WorldGenSettings flatWorldGenerator(RegistryAccess.Frozen registryaccess$frozen, WorldGenSettings worldGenSettings, FlatLevelGeneratorSettings flatLevelGeneratorSettings) {
-        Registry<StructureSet> registry = registryaccess$frozen.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
+    /**
+     * Flat world generator
+     * @param registryAccess$Frozen frozen registry access
+     * @param worldGenSettings world generator settings
+     * @param flatLevelGeneratorSettings flat level generator settings
+     * @return world generator settings with overworld replaced with the flat world generator
+     */
+    private WorldGenSettings flatWorldGenerator(RegistryAccess.Frozen registryAccess$Frozen, WorldGenSettings worldGenSettings, FlatLevelGeneratorSettings flatLevelGeneratorSettings) {
+        Registry<StructureSet> registry = registryAccess$Frozen.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
         ChunkGenerator chunkGenerator = new FlatLevelSource(registry, flatLevelGeneratorSettings);
-        return WorldGenSettings.replaceOverworldGenerator(registryaccess$frozen, worldGenSettings, chunkGenerator);
+        return WorldGenSettings.replaceOverworldGenerator(registryAccess$Frozen, worldGenSettings, chunkGenerator);
     }
 
+    /**
+     * Create the level settings
+     * @return the level settings
+     */
     private LevelSettings createLevelSettings() {
         String s = worldName.trim();
         GameRules gameRules = new GameRules();
@@ -133,11 +138,21 @@ public class DevWorldUtils {
         return new LevelSettings(s, GameType.CREATIVE, false, Difficulty.NORMAL, true, gameRules, DataPackConfig.DEFAULT);
     }
 
+    /**
+     * Create default load configuration
+     * @param p_232873_
+     * @param p_232874_
+     * @return
+     */
     private static WorldLoader.InitConfig createDefaultLoadConfig(PackRepository p_232873_, DataPackConfig p_232874_) {
         WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_232873_, p_232874_, false);
         return new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.INTEGRATED, 2);
     }
 
+    /**
+     * Create new world directory
+     * @return Level storage source
+     */
     private Optional<LevelStorageSource.LevelStorageAccess> createNewWorldDirectory() {
         try {
             LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = this.minecraft.getLevelSource().createAccess(this.resultFolder);
@@ -183,24 +198,28 @@ public class DevWorldUtils {
         }
 
         SystemToast.onPackCopyFailure(this.minecraft, this.resultFolder);
-        this.popScreen();
+        this.removeTempDataPackDir();
         return Optional.empty();
     }
 
-    private static void copyBetweenDirs(Path pFromDir, Path pToDir, Path pFilePath) {
+    /**
+     * Copy between directories
+     * @param pathFromDir directory to copy from
+     * @param pathToDir directory to copy to
+     * @param pathFilePath path of where files are
+     */
+    private static void copyBetweenDirs(Path pathFromDir, Path pathToDir, Path pathFilePath) {
         try {
-            Util.copyBetweenDirs(pFromDir, pToDir, pFilePath);
+            Util.copyBetweenDirs(pathFromDir, pathToDir, pathFilePath);
         } catch (IOException ioexception) {
-            LOGGER.warn("Failed to copy datapack file from {} to {}", pFilePath, pToDir);
+            LOGGER.warn("Failed to copy datapack file from {} to {}", pathFilePath, pathToDir);
             throw new UncheckedIOException(ioexception);
         }
     }
 
-    public void popScreen() {
-        // this.minecraft.setScreen(this.lastScreen);
-        this.removeTempDataPackDir();
-    }
-
+    /**
+     * Remove the temporary data pack directory
+     */
     private void removeTempDataPackDir() {
         if (this.tempDataPackDir != null) {
             try {
@@ -237,27 +256,37 @@ public class DevWorldUtils {
 
     }
 
-    public boolean saveExist() {
+    /**
+     * Check to see if there is a dev world save
+     * @return boolean of if the save exists
+     */
+    public boolean saveExists() {
         LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
         return levelstoragesource.levelExists(this.worldName);
     }
 
+    /**
+     * Load the dev world
+     */
     public void loadDevWorld() {
         assert this.minecraft.screen != null;
         this.minecraft.createWorldOpenFlows().loadLevel(this.minecraft.screen, this.worldName);
     }
 
+    /**
+     * Delete the dev world
+     */
     public void deleteDevWorld() {
-        LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
+        LevelStorageSource levelStorageSource = this.minecraft.getLevelSource();
 
         try {
-            LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.createAccess(this.worldName);
+            LevelStorageSource.LevelStorageAccess levelStorageSource$LevelStorageAccess = levelStorageSource.createAccess(this.worldName);
 
             try {
-                levelstoragesource$levelstorageaccess.deleteLevel();
+                levelStorageSource$LevelStorageAccess.deleteLevel();
             } catch (Throwable throwable1) {
                 try {
-                    levelstoragesource$levelstorageaccess.close();
+                    levelStorageSource$LevelStorageAccess.close();
                 } catch (Throwable throwable) {
                     throwable1.addSuppressed(throwable);
                 }
@@ -265,7 +294,7 @@ public class DevWorldUtils {
                 throw throwable1;
             }
 
-            levelstoragesource$levelstorageaccess.close();
+            levelStorageSource$LevelStorageAccess.close();
         } catch (IOException ioexception) {
             SystemToast.onWorldDeleteFailure(this.minecraft, this.worldName);
             LOGGER.error("Failed to delete world {}", this.worldName, ioexception);
