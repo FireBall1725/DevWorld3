@@ -3,5 +3,7 @@
   "devworld.menu.load": "Load World",
   "devworld.menu.delete": "Delete World",
 
-  "devworld.title": "Dev World 3"
+  "devworld.title": "Dev World 3",
+
+  "devworld.hover.delete": "Press [LEFT SHIFT] two times to enable delete"
 }

@@ -60,10 +60,10 @@ public class DevWorldUtils {
     public void createDevWorld() throws Exception {
         this.resultFolder = this.worldName.trim();
         Minecraft.getInstance().setScreen(null);
-        queueLoadScreen(minecraft, PREPARING_WORLD_DATA);
+        queueLoadScreen(minecraft);
 
         Optional<LevelStorageSource.LevelStorageAccess> optional = this.createNewWorldDirectory();
-        if (!optional.isEmpty()) {
+        if (optional.isPresent()) {
             this.removeTempDataPackDir();
 
 
@@ -115,8 +115,8 @@ public class DevWorldUtils {
         });
     }
 
-    private void queueLoadScreen(Minecraft minecraft, Component component) {
-        minecraft.forceSetScreen(new GenericDirtMessageScreen(component));
+    private void queueLoadScreen(Minecraft minecraft) {
+        minecraft.forceSetScreen(new GenericDirtMessageScreen(DevWorldUtils.PREPARING_WORLD_DATA));
     }
 
     private WorldGenSettings flatWorldGenerator(RegistryAccess.Frozen registryaccess$frozen, WorldGenSettings worldGenSettings, FlatLevelGeneratorSettings flatLevelGeneratorSettings) {
@@ -171,9 +171,7 @@ public class DevWorldUtils {
                     throw throwable1;
                 }
 
-                if (stream != null) {
-                    stream.close();
-                }
+                stream.close();
 
                 return optional;
             } catch (UncheckedIOException | IOException ioexception) {
@@ -229,9 +227,7 @@ public class DevWorldUtils {
                     throw throwable1;
                 }
 
-                if (stream != null) {
-                    stream.close();
-                }
+                stream.close();
             } catch (IOException ioexception) {
                 LOGGER.warn("Failed to list temporary dir {}", (Object)this.tempDataPackDir);
             }
@@ -247,6 +243,7 @@ public class DevWorldUtils {
     }
 
     public void loadDevWorld() {
+        assert this.minecraft.screen != null;
         this.minecraft.createWorldOpenFlows().loadLevel(this.minecraft.screen, this.worldName);
     }
 
@@ -259,20 +256,16 @@ public class DevWorldUtils {
             try {
                 levelstoragesource$levelstorageaccess.deleteLevel();
             } catch (Throwable throwable1) {
-                if (levelstoragesource$levelstorageaccess != null) {
-                    try {
-                        levelstoragesource$levelstorageaccess.close();
-                    } catch (Throwable throwable) {
-                        throwable1.addSuppressed(throwable);
-                    }
+                try {
+                    levelstoragesource$levelstorageaccess.close();
+                } catch (Throwable throwable) {
+                    throwable1.addSuppressed(throwable);
                 }
 
                 throw throwable1;
             }
 
-            if (levelstoragesource$levelstorageaccess != null) {
-                levelstoragesource$levelstorageaccess.close();
-            }
+            levelstoragesource$levelstorageaccess.close();
         } catch (IOException ioexception) {
             SystemToast.onWorldDeleteFailure(this.minecraft, this.worldName);
             LOGGER.error("Failed to delete world {}", this.worldName, ioexception);
