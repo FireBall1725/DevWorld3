@@ -81,12 +81,6 @@ jobs:
             export CI_VERSION=`cat CI_VERSION`
             gradle build
 
-#      - run:
-#          name: "Publish to Artifactory"
-#          command: |
-#            export CI_VERSION=`cat CI_VERSION`
-#            gradle publishArtifactoryPublicationToArtifactoryRepository
-
       - run:
           name: "Publish to Curse"
           command: |
