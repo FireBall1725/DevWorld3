@@ -72,11 +72,23 @@ public class DevWorldClientEvents {
 
             // Render the mod name on the screen
             PoseStack poseStack = new PoseStack();
-            GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font, Component.translatable("devworld.title"), textX, textY, 16777215);
+            GuiComponent.drawCenteredString(
+                    poseStack,
+                    Minecraft.getInstance().font,
+                    Component.translatable("devworld.title"),
+                    textX,
+                    textY,
+                    16777215
+            );
 
             // Render tooltip if over the delete button
             if (buttonDelete.isHoveredOrFocused() && buttonDelete.visible && !buttonDelete.active) {
-                titleScreen.renderTooltip(poseStack, Component.translatable("devworld.hover.delete"), event.getMouseX(), event.getMouseY());
+                titleScreen.renderTooltip(
+                        poseStack,
+                        Component.translatable("devworld.hover.delete"),
+                        event.getMouseX(),
+                        event.getMouseY()
+                );
             }
         }
     }
@@ -92,25 +104,46 @@ public class DevWorldClientEvents {
             int buttonX = event.getScreen().width / 2 + 104;
 
             // Create the create dev world button
-            buttonCreate = new Button(buttonX, buttonY, 84, 20, Component.translatable("devworld.menu.new"), button -> {
-                try {
-                    devWorldUtils.createDevWorld();
-                } catch (Exception ex) {
-                    LOGGER.error(ex.getMessage());
-                }
-            });
+            buttonCreate = new Button(
+                    buttonX,
+                    buttonY,
+                    84,
+                    20,
+                    Component.translatable("devworld.menu.new"),
+                    button -> {
+                        try {
+                            devWorldUtils.createDevWorld();
+                        } catch (Exception ex) {
+                            LOGGER.error(ex.getMessage());
+                        }
+                    }
+            );
 
             // Create the load dev world button
-            buttonLoad = new Button(buttonX, buttonY, 84, 20, Component.translatable("devworld.menu.load"), button -> {
-                devWorldUtils.loadDevWorld();
-            });
+            buttonLoad = new Button(
+                    buttonX,
+                    buttonY,
+                    84,
+                    20,
+                    Component.translatable("devworld.menu.load"),
+                    button -> {
+                        devWorldUtils.loadDevWorld();
+                    }
+            );
             buttonY += 24;
 
             // Create the delete dev world button
-            buttonDelete = new Button(buttonX, buttonY, 84, 20, Component.translatable("devworld.menu.delete"), button -> {
-                devWorldUtils.deleteDevWorld();
-                keyShiftCount = 0;
-            });
+            buttonDelete = new Button(
+                    buttonX,
+                    buttonY,
+                    84,
+                    20,
+                    Component.translatable("devworld.menu.delete"),
+                    button -> {
+                        devWorldUtils.deleteDevWorld();
+                        keyShiftCount = 0;
+                    }
+            );
 
             // Set all the buttons to invisible
             buttonCreate.visible = false;
