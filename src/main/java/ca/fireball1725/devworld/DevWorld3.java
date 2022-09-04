@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 @Mod(DevWorld3.MOD_ID)
 public class DevWorld3 {
     public static final String MOD_ID = "devworld";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private final Logger LOGGER = LogUtils.getLogger();
 
     public DevWorld3() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

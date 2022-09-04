@@ -15,7 +15,7 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.Logger;
 
 public class DevWorldClientEvents {
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private final Logger LOGGER = LogUtils.getLogger();
 
     private Button buttonCreate, buttonLoad, buttonDelete;
     private int keyShiftCount = 0;

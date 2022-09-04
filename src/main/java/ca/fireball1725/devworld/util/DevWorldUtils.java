@@ -49,12 +49,11 @@ import java.util.stream.Stream;
 public class DevWorldUtils {
     private final String worldName = "DevWorld";
     private final Minecraft minecraft = Minecraft.getInstance();
-    private static final Component PREPARING_WORLD_DATA = Component.translatable("createWorld.preparing");
+    private final Component PREPARING_WORLD_DATA = Component.translatable("createWorld.preparing");
     @Nullable
     private Path tempDataPackDir;
     String resultFolder;
-    private static final Logger LOGGER = LogUtils.getLogger();
-
+    private final Logger LOGGER = LogUtils.getLogger();
 
     /**
      * Create a new dev world
@@ -70,7 +69,7 @@ public class DevWorldUtils {
             this.removeTempDataPackDir();
 
             PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource());
-            WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(
+            WorldLoader.InitConfig worldLoader$InitConfig = createDefaultLoadConfig(
                     packrepository,
                     new DataPackConfig(
                             ImmutableList.of("vanilla"),
@@ -79,16 +78,16 @@ public class DevWorldUtils {
             );
 
             CompletableFuture<WorldCreationContext> completableFuture = WorldLoader.load(
-                    worldloader$initconfig,
+                    worldLoader$InitConfig,
                     (resourceManager, dataPackConfig) -> {
-                        RegistryAccess.Frozen registryaccess$frozen = RegistryAccess.builtinCopy().freeze();
+                        RegistryAccess.Frozen registryAccess$Frozen = RegistryAccess.builtinCopy().freeze();
                         WorldGenSettings worldgensettings = WorldPresets.createNormalWorldFromPreset(
-                                registryaccess$frozen,
-                                0,
-                                false,
-                                false
+                                registryAccess$Frozen,
+                                0, // World seed
+                                false, // Generate structures
+                                false // Create bonus chest
                         );
-                        return Pair.of(worldgensettings, registryaccess$frozen);
+                        return Pair.of(worldgensettings, registryAccess$Frozen);
                     },
                     (closeableResourceManager, datapackResources, registryAccess, levelSeed) -> {
                         closeableResourceManager.close();
@@ -110,7 +109,7 @@ public class DevWorldUtils {
                     worldCreationContext.registryAccess().registryOrThrow(Registry.STRUCTURE_SET_REGISTRY),
                     "minecraft:bedrock,3*minecraft:stone,130*minecraft:sandstone;minecraft:desert;",
                     new FlatLevelGeneratorSettings(
-                            Optional.empty(),
+                            Optional.empty(), // Structure overrides
                             worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)
                     )
             );
@@ -146,8 +145,8 @@ public class DevWorldUtils {
      */
     public WorldCreationContext createFinalSettings(boolean isHardCore, WorldCreationContext worldCreationContext) {
         OptionalLong optionallong = WorldGenSettings.parseSeed("0");
-        return worldCreationContext.withSettings((p_233071_) -> {
-            return p_233071_.withSeed(isHardCore, optionallong);
+        return worldCreationContext.withSettings((worldSettings) -> {
+            return worldSettings.withSeed(isHardCore, optionallong);
         });
     }
 
@@ -155,7 +154,7 @@ public class DevWorldUtils {
      * Show loading screen
      */
     private void queueLoadScreen() {
-        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(DevWorldUtils.PREPARING_WORLD_DATA));
+        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(this.PREPARING_WORLD_DATA));
     }
 
     /**
@@ -197,21 +196,21 @@ public class DevWorldUtils {
 
     /**
      * Create default load configuration
-     * @param p_232873_
-     * @param p_232874_
-     * @return
+     * @param packRepository pack repository
+     * @param dataPackConfig data pack configuration
+     * @return World loader configuration
      */
-    private static WorldLoader.InitConfig createDefaultLoadConfig(
-            PackRepository p_232873_,
-            DataPackConfig p_232874_
+    private WorldLoader.InitConfig createDefaultLoadConfig(
+            PackRepository packRepository,
+            DataPackConfig dataPackConfig
     ) {
-        WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(
-                p_232873_,
-                p_232874_,
+        WorldLoader.PackConfig worldLoader$PackConfig = new WorldLoader.PackConfig(
+                packRepository,
+                dataPackConfig,
                 false
         );
         return new WorldLoader.InitConfig(
-                worldloader$packconfig,
+                worldLoader$PackConfig,
                 Commands.CommandSelection.INTEGRATED,
                 2
         );
@@ -223,11 +222,11 @@ public class DevWorldUtils {
      */
     private Optional<LevelStorageSource.LevelStorageAccess> createNewWorldDirectory() {
         try {
-            LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess =
+            LevelStorageSource.LevelStorageAccess levelStorageSource$LevelStorageAccess =
                     this.minecraft.getLevelSource().createAccess(this.resultFolder);
 
             if (this.tempDataPackDir == null) {
-                return Optional.of(levelstoragesource$levelstorageaccess);
+                return Optional.of(levelStorageSource$LevelStorageAccess);
             }
 
             try {
@@ -235,14 +234,14 @@ public class DevWorldUtils {
 
                 Optional optional;
                 try {
-                    Path path = levelstoragesource$levelstorageaccess.getLevelPath(LevelResource.DATAPACK_DIR);
+                    Path path = levelStorageSource$LevelStorageAccess.getLevelPath(LevelResource.DATAPACK_DIR);
                     Files.createDirectories(path);
                     stream.filter((p_232921_) -> {
                         return !p_232921_.equals(this.tempDataPackDir);
                     }).forEach((p_232945_) -> {
                         copyBetweenDirs(this.tempDataPackDir, path, p_232945_);
                     });
-                    optional = Optional.of(levelstoragesource$levelstorageaccess);
+                    optional = Optional.of(levelStorageSource$LevelStorageAccess);
                 } catch (Throwable throwable1) {
                     if (stream != null) {
                         try {
@@ -260,7 +259,7 @@ public class DevWorldUtils {
                 return optional;
             } catch (UncheckedIOException | IOException ioexception) {
                 LOGGER.warn("Failed to copy datapacks to world {}", this.resultFolder, ioexception);
-                levelstoragesource$levelstorageaccess.close();
+                levelStorageSource$LevelStorageAccess.close();
             }
         } catch (UncheckedIOException | IOException ioexception1) {
             LOGGER.warn("Failed to create access for {}", this.resultFolder, ioexception1);
@@ -277,11 +276,11 @@ public class DevWorldUtils {
      * @param pathToDir directory to copy to
      * @param pathFilePath path of where files are
      */
-    private static void copyBetweenDirs(Path pathFromDir, Path pathToDir, Path pathFilePath) {
+    private void copyBetweenDirs(Path pathFromDir, Path pathToDir, Path pathFilePath) {
         try {
             Util.copyBetweenDirs(pathFromDir, pathToDir, pathFilePath);
         } catch (IOException ioexception) {
-            LOGGER.warn("Failed to copy datapack file from {} to {}", pathFilePath, pathToDir);
+            this.LOGGER.warn("Failed to copy datapack file from {} to {}", pathFilePath, pathToDir);
             throw new UncheckedIOException(ioexception);
         }
     }
@@ -295,11 +294,11 @@ public class DevWorldUtils {
                 Stream<Path> stream = Files.walk(this.tempDataPackDir);
 
                 try {
-                    stream.sorted(Comparator.reverseOrder()).forEach((p_232942_) -> {
+                    stream.sorted(Comparator.reverseOrder()).forEach((file) -> {
                         try {
-                            Files.delete(p_232942_);
+                            Files.delete(file);
                         } catch (IOException ioexception1) {
-                            LOGGER.warn("Failed to remove temporary file {}", p_232942_, ioexception1);
+                            LOGGER.warn("Failed to remove temporary file {}", file, ioexception1);
                         }
 
                     });
