@@ -18,7 +18,7 @@ plugins {
 
 version = System.getenv("CI_VERSION") ?: "0.0.0"
 group = 'ca.fireball1725.devworld' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'devworld'
+archivesBaseName = "${project.name}"
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -96,6 +96,8 @@ dependencies {
 }
 
 jar {
+    archiveClassifier.set("${project_type}")
+
     manifest {
         attributes([
                 "Specification-Title"     : "DevWorld3",
