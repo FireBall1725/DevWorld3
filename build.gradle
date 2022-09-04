@@ -16,7 +16,16 @@ plugins {
     id 'com.github.breadmoirai.github-release' version '2.3.7'
 }
 
-version = System.getenv("CI_VERSION") ?: "0.0.0"
+if(System.getenv("CI_VERSION")) {
+    version = System.getenv("CI_VERSION")
+} else {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--abbrev=0'
+        standardOutput = stdout
+    }
+    version = stdout.toString().replace("\n", "").replace("\r", "").trim()
+}
 group = 'ca.fireball1725.devworld' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${project.name}"
 
@@ -116,12 +125,25 @@ jar.finalizedBy('reobfJar')
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
             artifact jar
+
+            pom.withXml {
+
+                // Go through all the dependencies.
+                asNode().dependencies.dependency.each { dep ->
+
+                    println 'Surpressing artifact ' + dep.artifactId.last().value().last() + ' from maven dependencies.'
+                    assert dep.parent().remove(dep)
+                }
+            }
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            url = uri("file://${System.getenv("local_maven")}")
         }
     }
 }
