@@ -5,3 +5,5 @@ pluginManagement {
         maven { url = 'https://maven.parchmentmc.org' }
     }
 }
+
+rootProject.name = "${project_name}-${minecraft_version}"
