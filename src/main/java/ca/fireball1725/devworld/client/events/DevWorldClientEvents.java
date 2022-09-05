@@ -172,9 +172,9 @@ public class DevWorldClientEvents {
     public void eventServerStarted(ServerStartedEvent event) {
         ServerLevel serverLevel = event.getServer().overworld();
 
-        if (!DevWorldConfig.GAMERULE_DAYLIGHT_CYCLE.get()) {
+        if (!DevWorldConfig.RULE_DAYLIGHT.get()) {
             // Check to see if the current time is noon, and if it isn't set the time to noon
-            int time = DevWorldConfig.GAMERULE_TIME_VALUE.get();
+            int time = DevWorldConfig.DAYLIGHT_VALUE.get();
             if (serverLevel.getGameTime() != time)
                 event.getServer().overworld().setDayTime(time);
         }

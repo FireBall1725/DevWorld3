@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.Util;
+import net.minecraft.client.Game;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
@@ -187,8 +188,13 @@ public class DevWorldUtils {
     private LevelSettings createLevelSettings() {
         String s = worldName.trim();
         GameRules gameRules = new GameRules();
-        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.GAMERULE_DAYLIGHT_CYCLE.get(), null);
-        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.GAMERULE_WEATHER_CYCLE.get(), null);
+        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.RULE_DAYLIGHT.get(), null);
+        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.RULE_WEATHER_CYCLE.get(), null);
+        gameRules.getRule(GameRules.RULE_DOFIRETICK).set(DevWorldConfig.RULE_DOFIRETICK.get(), null);
+        gameRules.getRule(GameRules.RULE_MOBGRIEFING).set(DevWorldConfig.RULE_MOBGRIEFING.get(), null);
+        gameRules.getRule(GameRules.RULE_DOMOBSPAWNING).set(DevWorldConfig.RULE_DOMOBSPAWNING.get(), null);
+        gameRules.getRule(GameRules.RULE_DISABLE_RAIDS).set(DevWorldConfig.RULE_DISABLE_RAIDS.get(), null);
+        gameRules.getRule(GameRules.RULE_DOINSOMNIA).set(DevWorldConfig.RULE_DOINSOMNIA.get(), null);
 
         return new LevelSettings(
                 s,
