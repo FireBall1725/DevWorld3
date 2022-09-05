@@ -27,11 +27,6 @@ public class DevWorld3 {
         MinecraftForge.EVENT_BUS.register(this);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> DevWorldClientEvents::new);
 
-        // Check to see if there is user configuration
-        String devWorldConfig = System.getenv("DEVWORLD_CONFIG2");
-        LOGGER.info(">>> Dev World Configuration: " + devWorldConfig);
-        LOGGER.info(">>> " + (devWorldConfig == null));
-
         Config.register();
     }
 

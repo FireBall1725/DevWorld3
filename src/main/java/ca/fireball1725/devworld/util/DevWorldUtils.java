@@ -1,5 +1,6 @@
 package ca.fireball1725.devworld.util;
 
+import ca.fireball1725.devworld.config.Config;
 import ca.fireball1725.devworld.config.DevWorldConfig;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
@@ -90,7 +91,7 @@ public class DevWorldUtils {
                                 registryAccess$Frozen,
                                 0, // World seed
                                 false, // Generate structures
-                                false // Create bonus chest
+                                DevWorldConfig.ENABLE_BONUS_CHEST.get() // Create bonus chest
                         );
                         return Pair.of(worldgensettings, registryAccess$Frozen);
                     },
@@ -186,8 +187,8 @@ public class DevWorldUtils {
     private LevelSettings createLevelSettings() {
         String s = worldName.trim();
         GameRules gameRules = new GameRules();
-        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(false, null);
-        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
+        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.GAMERULE_DAYLIGHT_CYCLE.get(), null);
+        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.GAMERULE_WEATHER_CYCLE.get(), null);
 
         return new LevelSettings(
                 s,
