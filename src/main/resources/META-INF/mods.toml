@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[41,)"
 license="AGPL License"
+issueTrackerURL="https://github.com/FireBall1725/DevWorld3/issues"
 
 [[mods]]
 modId="devworld"
