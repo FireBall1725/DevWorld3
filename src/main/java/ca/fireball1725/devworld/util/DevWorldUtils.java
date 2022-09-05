@@ -1,19 +1,25 @@
 package ca.fireball1725.devworld.util;
 
+import ca.fireball1725.devworld.config.Config;
+import ca.fireball1725.devworld.config.DevWorldConfig;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.Util;
+import net.minecraft.client.Game;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 import net.minecraft.client.gui.screens.PresetFlatWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -28,6 +34,7 @@ import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -85,7 +92,7 @@ public class DevWorldUtils {
                                 registryAccess$Frozen,
                                 0, // World seed
                                 false, // Generate structures
-                                false // Create bonus chest
+                                DevWorldConfig.ENABLE_BONUS_CHEST.get() // Create bonus chest
                         );
                         return Pair.of(worldgensettings, registryAccess$Frozen);
                     },
@@ -107,7 +114,7 @@ public class DevWorldUtils {
             FlatLevelGeneratorSettings flatLevelGeneratorSettings = PresetFlatWorldScreen.fromString(
                     worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY),
                     worldCreationContext.registryAccess().registryOrThrow(Registry.STRUCTURE_SET_REGISTRY),
-                    "minecraft:bedrock,3*minecraft:stone,130*minecraft:sandstone;minecraft:desert;",
+                    DevWorldConfig.FLATWORLD_GENERATOR_STRING.get(), // World Generator Configuration String
                     new FlatLevelGeneratorSettings(
                             Optional.empty(), // Structure overrides
                             worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)
@@ -181,8 +188,14 @@ public class DevWorldUtils {
     private LevelSettings createLevelSettings() {
         String s = worldName.trim();
         GameRules gameRules = new GameRules();
-        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(false, null);
-        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
+        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.RULE_DAYLIGHT.get(), null);
+        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.RULE_WEATHER_CYCLE.get(), null);
+        gameRules.getRule(GameRules.RULE_DOFIRETICK).set(DevWorldConfig.RULE_DOFIRETICK.get(), null);
+        gameRules.getRule(GameRules.RULE_MOBGRIEFING).set(DevWorldConfig.RULE_MOBGRIEFING.get(), null);
+        gameRules.getRule(GameRules.RULE_DOMOBSPAWNING).set(DevWorldConfig.RULE_DOMOBSPAWNING.get(), null);
+        gameRules.getRule(GameRules.RULE_DISABLE_RAIDS).set(DevWorldConfig.RULE_DISABLE_RAIDS.get(), null);
+        gameRules.getRule(GameRules.RULE_DOINSOMNIA).set(DevWorldConfig.RULE_DOINSOMNIA.get(), null);
+
         return new LevelSettings(
                 s,
                 GameType.CREATIVE,
