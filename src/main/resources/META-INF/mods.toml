@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[41,)"
 license="AGPL License"
+issueTrackerURL="https://github.com/FireBall1725/DevWorld3/issues"
 
 [[mods]]
 modId="devworld"
@@ -8,8 +9,10 @@ version="${file.jarVersion}"
 displayName="DevWorld 3"
 logoFile="devworldLogo.png"
 authors="FireBall1725"
+displayURL="https://github.com/FireBall1725/DevWorld3/wiki"
+credits="Special thanks to Jared for hosting the mod on their maven"
 description='''
-Developer mod to quickly create a development world
+DevWorld 3 is a Minecraft Forge Mod that is designed to be an easy way to create a developer test world, this test world can be then used to test your development mod in. With one click you get a creative flat world that by default is set to the redstone ready preset, time set to noon and is frozen, and weather disabled. From the title screen you can also quickly load, delete and regenerate the DevWorld.
 '''
 
 [[dependencies.devworld]]
