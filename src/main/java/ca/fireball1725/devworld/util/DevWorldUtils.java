@@ -1,5 +1,6 @@
 package ca.fireball1725.devworld.util;
 
+import ca.fireball1725.devworld.config.DevWorldConfig;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -111,7 +112,7 @@ public class DevWorldUtils {
             FlatLevelGeneratorSettings flatLevelGeneratorSettings = PresetFlatWorldScreen.fromString(
                     worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY),
                     worldCreationContext.registryAccess().registryOrThrow(Registry.STRUCTURE_SET_REGISTRY),
-                    "minecraft:bedrock,3*minecraft:stone,130*minecraft:sandstone;minecraft:desert;",
+                    DevWorldConfig.FLATWORLD_GENERATOR_STRING.get(), // World Generator Configuration String
                     new FlatLevelGeneratorSettings(
                             Optional.empty(), // Structure overrides
                             worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)
@@ -187,8 +188,6 @@ public class DevWorldUtils {
         GameRules gameRules = new GameRules();
         gameRules.getRule(GameRules.RULE_DAYLIGHT).set(false, null);
         gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
-
-        GameRules.Key<T> = "doFireTick";
 
         return new LevelSettings(
                 s,
