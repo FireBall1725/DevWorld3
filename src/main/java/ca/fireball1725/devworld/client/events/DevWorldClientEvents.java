@@ -1,5 +1,7 @@
 package ca.fireball1725.devworld.client.events;
 
+import ca.fireball1725.devworld.config.Config;
+import ca.fireball1725.devworld.config.DevWorldConfig;
 import ca.fireball1725.devworld.util.DevWorldUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
@@ -170,8 +172,11 @@ public class DevWorldClientEvents {
     public void eventServerStarted(ServerStartedEvent event) {
         ServerLevel serverLevel = event.getServer().overworld();
 
-        // Check to see if the current time is noon, and if it isn't set the time to noon
-        if (serverLevel.getGameTime() != 6000)
-            event.getServer().overworld().setDayTime(6000);
+        if (!DevWorldConfig.GAMERULE_DAYLIGHT_CYCLE.get()) {
+            // Check to see if the current time is noon, and if it isn't set the time to noon
+            int time = DevWorldConfig.GAMERULE_TIME_VALUE.get();
+            if (serverLevel.getGameTime() != time)
+                event.getServer().overworld().setDayTime(time);
+        }
     }
 }
