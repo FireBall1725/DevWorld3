@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="AGPL License"
+
+[[mods]]
+modId="devworld"
+version="${version}"
+displayName="DevWorld 3"
+logoFile="devworldLogo.png"
+authors="FireBall1725"
+displayURL="https://github.com/FireBall1725/DevWorld3/wiki"
+credits="Special thanks to Jared for hosting the mod on their maven"
+description='''
+DevWorld 3 is a Minecraft NeoForge Mod that is designed to be an easy way to create a developer test world, this test world can be then used to test your development mod in. With one click you get a creative flat world that by default is set to the redstone ready preset, time set to noon and is frozen, and weather disabled. From the title screen you can also quickly load, delete and regenerate the DevWorld.
+'''
+
+[[dependencies.devworld]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.devworld]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,1.22)"
+    ordering="NONE"
+    side="BOTH"

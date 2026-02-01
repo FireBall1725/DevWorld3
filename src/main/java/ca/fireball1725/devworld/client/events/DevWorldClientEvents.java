@@ -10,13 +10,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import org.slf4j.Logger;
 
-/*? if forge {*/
-import com.mojang.blaze3d.vertex.PoseStack;
+/*? if forge && <1.20 {*/
+/*import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
-/*?}*/
+*//*?}*/
+/*? if forge && >=1.20.1 {*/
+/*import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
+*//*?}*/
 /*? if neoforge {*/
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -24,12 +30,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 /*?}*/
 /*? if fabric {*/
-import net.fabricmc.api.ClientModInitializer;
+/*import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.client.gui.GuiGraphics;
-/*?}*/
+*//*?}*/
 
 public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitializer*//*?}*/ {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -39,7 +46,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     private DevWorldUtils devWorldUtils;
 
     /*? if fabric {*/
-    @Override
+    /*@Override
     public void onInitializeClient() {
         devWorldUtils = new DevWorldUtils();
 
@@ -53,7 +60,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
             }
         });
 
-        ScreenEvents.AFTER_RENDER.register((screen, guiGraphics, mouseX, mouseY, tickDelta) -> {
+        ScreenEvents.afterRender(null).register((screen, guiGraphics, mouseX, mouseY, tickDelta) -> {
             if (screen instanceof TitleScreen titleScreen) {
                 eventScreenRender(screen, guiGraphics, mouseX, mouseY);
             }
@@ -61,17 +68,17 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
 
         ServerLifecycleEvents.SERVER_STARTED.register(this::eventServerStarted);
     }
-    /*?}*/
+    *//*?}*/
     /*? if forgeLike {*/
     public DevWorldClientEvents() {
         devWorldUtils = new DevWorldUtils();
 
         /*? if forge {*/
-        MinecraftForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
+        /*MinecraftForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
         MinecraftForge.EVENT_BUS.addListener(this::eventScreenRenderPost);
         MinecraftForge.EVENT_BUS.addListener(this::eventScreenInit);
         MinecraftForge.EVENT_BUS.addListener(this::eventServerStarted);
-        /*?}*/
+        *//*?}*/
         /*? if neoforge {*/
         NeoForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
         NeoForge.EVENT_BUS.addListener(this::eventScreenRenderPost);
@@ -81,8 +88,8 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     }
     /*?}*/
 
-    /*? if forge {*/
-    public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
+    /*? if forge && <1.20 {*/
+    /*public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
             if (event.getKeyCode() == 340) {
                 keyShiftCount++;
@@ -133,9 +140,9 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     public void eventServerStarted(ServerStartedEvent event) {
         handleServerStarted(event.getServer().overworld());
     }
-    /*?}*/
-    /*? if neoforge {*/
-    public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
+    *//*?}*/
+    /*? if forge && >=1.20.1 {*/
+    /*public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
             if (event.getKeyCode() == 340) {
                 keyShiftCount++;
@@ -184,9 +191,60 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     public void eventServerStarted(ServerStartedEvent event) {
         handleServerStarted(event.getServer().overworld());
     }
+    *//*?}*/
+    /*? if neoforge {*/
+    public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
+        if (event.getScreen() instanceof TitleScreen) {
+            if (event.getKeyCode() == 340) {
+                keyShiftCount++;
+            }
+            if (keyShiftCount >= 2) {
+                buttonDelete.active = true;
+            }
+        }
+    }
+
+    public void eventScreenRenderPost(ScreenEvent.Render.Post event) {
+        if (event.getScreen() instanceof TitleScreen titleScreen) {
+            updateButtonVisibility();
+
+            int textY = event.getScreen().height / 4 + 38;
+            int textX = event.getScreen().width / 2 + 104 + 42;
+
+            event.getGuiGraphics().drawCenteredString(
+                    Minecraft.getInstance().font,
+                    Component.translatable("devworld.title"),
+                    textX,
+                    textY,
+                    16777215
+            );
+
+            if (buttonDelete.isHoveredOrFocused() && buttonDelete.visible && !buttonDelete.active) {
+                event.getGuiGraphics().renderTooltip(
+                        Minecraft.getInstance().font,
+                        Component.translatable("devworld.hover.delete"),
+                        event.getMouseX(),
+                        event.getMouseY()
+                );
+            }
+        }
+    }
+
+    public void eventScreenInit(ScreenEvent.Init.Post event) {
+        if (event.getScreen() instanceof TitleScreen) {
+            initButtons(event.getScreen(), event.getScreen().width, event.getScreen().height);
+            event.addListener(buttonCreate);
+            event.addListener(buttonLoad);
+            event.addListener(buttonDelete);
+        }
+    }
+
+    public void eventServerStarted(ServerStartedEvent event) {
+        handleServerStarted(event.getServer().overworld());
+    }
     /*?}*/
     /*? if fabric {*/
-    private void eventScreenKeyPressed(net.minecraft.client.gui.screens.Screen screen, int key) {
+    /*private void eventScreenKeyPressed(net.minecraft.client.gui.screens.Screen screen, int key) {
         if (key == 340) {
             keyShiftCount++;
         }
@@ -221,15 +279,15 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
 
     private void eventScreenInit(net.minecraft.client.gui.screens.Screen screen, int width, int height) {
         initButtons(screen, width, height);
-        ScreenEvents.addButton(screen, buttonCreate);
-        ScreenEvents.addButton(screen, buttonLoad);
-        ScreenEvents.addButton(screen, buttonDelete);
+        Screens.getButtons(screen).add(buttonCreate);
+        Screens.getButtons(screen).add(buttonLoad);
+        Screens.getButtons(screen).add(buttonDelete);
     }
 
     private void eventServerStarted(net.minecraft.server.MinecraftServer server) {
         handleServerStarted(server.overworld());
     }
-    /*?}*/
+    *//*?}*/
 
     private void initButtons(net.minecraft.client.gui.screens.Screen screen, int width, int height) {
         int buttonY = height / 4 + 48;
@@ -262,7 +320,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
                 }
         ).bounds(buttonX, buttonY, 84, 20).build();
         /*?} else {*/
-        buttonCreate = new Button(
+        /*buttonCreate = new Button(
                 buttonX,
                 buttonY,
                 84,
@@ -299,7 +357,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
                     keyShiftCount = 0;
                 }
         );
-        /*?}*/
+        *//*?}*/
 
         buttonCreate.visible = false;
         buttonLoad.visible = false;

@@ -21,7 +21,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /*? if <1.21 {*/
-import net.minecraft.Util;
+/*import net.minecraft.Util;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 import net.minecraft.client.gui.screens.PresetFlatWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
@@ -49,15 +49,13 @@ import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.WorldData;
-/*?} else {*/
+*//*?} else {*/
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.WorldOptions;
-import net.minecraft.world.level.levelgen.flat.FlatLevelSource;
-import net.minecraft.world.level.levelgen.presets.WorldPreset;
 /*?}*/
 
 public class DevWorldUtils {
@@ -78,8 +76,8 @@ public class DevWorldUtils {
         if (optional.isPresent()) {
             this.removeTempDataPackDir();
 
-            /*? if <1.21 {*/
-            PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource());
+            /*? if <1.20 {*/
+            /*PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource());
             WorldLoader.InitConfig worldLoader$InitConfig = createDefaultLoadConfig(
                     packrepository,
                     new DataPackConfig(
@@ -145,37 +143,24 @@ public class DevWorldUtils {
                     finalWorldCreationContext.registryAccess(),
                     worldData
             );
-            /*?} else {*/
-            // 1.21+ simplified world creation
-            LevelSettings levelSettings = this.createLevelSettings();
-
-            // Create default world options
-            WorldOptions worldOptions = new WorldOptions(0L, false, DevWorldConfig.ENABLE_BONUS_CHEST.get());
-
-            // Create flat level generator settings
-            RegistryAccess.Frozen registryAccess = this.minecraft.getConnection() != null
-                    ? this.minecraft.getConnection().registryAccess()
-                    : RegistryAccess.fromRegistryOfRegistries(BuiltinRegistries.REGISTRY);
-
-            // Create world data with flat world preset
-            WorldData worldData = new PrimaryLevelData(
-                    levelSettings,
-                    worldOptions,
-                    Lifecycle.stable()
-            );
-
-            this.minecraft.createWorldOpenFlows().createFreshLevel(
-                    this.resultFolder,
-                    levelSettings,
-                    worldOptions,
-                    (context) -> WorldDimensions.BUILTIN.get()
-            );
+            *//*?} elif <1.21 {*/
+            /*// 1.20.x: Temporarily disable custom world creation
+            // TODO: Implement proper flat world creation for 1.20.x
+            throw new UnsupportedOperationException(
+                "World creation for 1.20.x is not yet implemented. " +
+                "The Minecraft world creation API changed significantly in 1.20.x.");
+            *//*?} else {*/
+            // 1.21.1: Temporarily disable custom world creation
+            // TODO: Implement proper flat world creation for 1.21.1
+            throw new UnsupportedOperationException(
+                "World creation for 1.21.1 is not yet implemented. " +
+                "The Minecraft world creation API changed significantly in 1.21.1.");
             /*?}*/
         }
     }
 
-    /*? if <1.21 {*/
-    public WorldCreationContext createFinalSettings(boolean isHardCore, WorldCreationContext worldCreationContext) {
+    /*? if <1.20 {*/
+    /*public WorldCreationContext createFinalSettings(boolean isHardCore, WorldCreationContext worldCreationContext) {
         OptionalLong optionallong = WorldGenSettings.parseSeed("0");
         return worldCreationContext.withSettings((worldSettings) -> {
             return worldSettings.withSeed(isHardCore, optionallong);
@@ -207,13 +192,20 @@ public class DevWorldUtils {
                 2
         );
     }
-    /*?}*/
+    *//*?}*/
 
     private void queueLoadScreen() {
-        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(this.PREPARING_WORLD_DATA));
+        // Screen loading simplified for 1.21.1
+        /*? if <1.21 {*/
+        /*this.minecraft.forceSetScreen(new GenericDirtMessageScreen(this.PREPARING_WORLD_DATA));*/
+        /*?} else {*/
+        // In 1.21.1, just set to null - the game will handle loading screen
+        this.minecraft.setScreen(null);
+        /*?}*/
     }
 
-    private LevelSettings createLevelSettings() {
+    /*? if <1.20 {*/
+    /*private LevelSettings createLevelSettings() {
         String s = worldName.trim();
         GameRules gameRules = new GameRules();
         gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.RULE_DAYLIGHT.get(), null);
@@ -224,7 +216,6 @@ public class DevWorldUtils {
         gameRules.getRule(GameRules.RULE_DISABLE_RAIDS).set(DevWorldConfig.RULE_DISABLE_RAIDS.get(), null);
         gameRules.getRule(GameRules.RULE_DOINSOMNIA).set(DevWorldConfig.RULE_DOINSOMNIA.get(), null);
 
-        /*? if <1.21 {*/
         return new LevelSettings(
                 s,
                 GameType.CREATIVE,
@@ -234,18 +225,8 @@ public class DevWorldUtils {
                 gameRules,
                 DataPackConfig.DEFAULT
         );
-        /*?} else {*/
-        return new LevelSettings(
-                s,
-                GameType.CREATIVE,
-                false,
-                Difficulty.NORMAL,
-                true,
-                gameRules,
-                WorldDataConfiguration.DEFAULT
-        );
-        /*?}*/
     }
+    *//*?}*/
 
     private Optional<LevelStorageSource.LevelStorageAccess> createNewWorldDirectory() {
         try {
@@ -299,7 +280,15 @@ public class DevWorldUtils {
 
     private void copyBetweenDirs(Path pathFromDir, Path pathToDir, Path pathFilePath) {
         try {
-            Util.copyBetweenDirs(pathFromDir, pathToDir, pathFilePath);
+            /*? if <1.21 {*/
+            /*Util.copyBetweenDirs(pathFromDir, pathToDir, pathFilePath);*/
+            /*?} else {*/
+            // Manual file copy for 1.21.1
+            Path relativePath = pathFromDir.relativize(pathFilePath);
+            Path targetPath = pathToDir.resolve(relativePath);
+            Files.createDirectories(targetPath.getParent());
+            Files.copy(pathFilePath, targetPath);
+            /*?}*/
         } catch (IOException ioexception) {
             this.LOGGER.warn("Failed to copy datapack file from {} to {}", pathFilePath, pathToDir);
             throw new UncheckedIOException(ioexception);
@@ -348,8 +337,13 @@ public class DevWorldUtils {
     }
 
     public void loadDevWorld() {
-        assert this.minecraft.screen != null;
-        this.minecraft.createWorldOpenFlows().loadLevel(this.minecraft.screen, this.worldName);
+        if (this.minecraft.getLevelSource().levelExists(this.worldName)) {
+            /*? if <1.21 {*/
+            /*this.minecraft.createWorldOpenFlows().loadLevel(null, this.worldName);*/
+            /*?} else {*/
+            this.minecraft.createWorldOpenFlows().openWorld(this.worldName, () -> {});
+            /*?}*/
+        }
     }
 
     public void deleteDevWorld() {

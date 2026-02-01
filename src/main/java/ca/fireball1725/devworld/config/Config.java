@@ -13,21 +13,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /*? if forge {*/
-import net.minecraftforge.common.ForgeConfigSpec;
+/*import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-/*?}*/
+*//*?}*/
 /*? if neoforge {*/
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 /*?}*/
 /*? if fabric {*/
-import net.fabricmc.loader.api.FabricLoader;
+/*import net.fabricmc.loader.api.FabricLoader;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-/*?}*/
+*//*?}*/
 
 public class Config {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -61,19 +61,20 @@ public class Config {
 
     private static void registerClientConfigs() {
         /*? if forge {*/
-        ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+        /*ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
         DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
         DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
-        /*?}*/
+        *//*?}*/
         /*? if neoforge {*/
-        ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
-        DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
-        DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
+        // TODO: Fix NeoForge 1.21.1 config registration API
+        // ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+        // DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
+        // DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
+        // ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
         /*?}*/
         /*? if fabric {*/
-        // Fabric uses JSON config loaded/saved via DevWorldConfig
+        /*// Fabric uses JSON config loaded/saved via DevWorldConfig
         Path configPath = FabricLoader.getInstance().getConfigDir().resolve("devworld.json");
         try {
             if (!Files.exists(configPath)) {
@@ -84,7 +85,7 @@ public class Config {
             LOGGER.error("Failed to load Fabric config", ex);
             DevWorldConfig.initDefaults();
         }
-        /*?}*/
+        *//*?}*/
     }
 
     private static String readStringFromURL(String requestURL) throws IOException {
