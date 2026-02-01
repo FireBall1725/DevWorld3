@@ -113,11 +113,11 @@ afterEvaluate {
             addGameVersion 'Fabric'
             addGameVersion 'NeoForge'
 
-            mainArtifact(project(':fabric').tasks.remapJar) {
+            mainArtifact(project(':fabric').tasks.remapJar.archiveFile) {
                 displayName = "DevWorld ${version} (Fabric)"
             }
 
-            additionalArtifact(project(':neoforge').tasks.remapJar) {
+            addArtifact(project(':neoforge').tasks.remapJar.archiveFile) {
                 displayName = "DevWorld ${version} (NeoForge)"
             }
         }
