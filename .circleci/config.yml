@@ -47,8 +47,11 @@ jobs:
             export CI_VERSION=`cat CI_VERSION`
             gradle build
       - store_artifacts:
-          path: build/libs
-          destination: artifact-file
+          path: fabric/build/libs
+          destination: fabric-artifacts
+      - store_artifacts:
+          path: neoforge/build/libs
+          destination: neoforge-artifacts
 
       - persist_to_workspace:
           root: .
@@ -115,13 +118,13 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
+                - 1.21.1
           requires:
             - version
       - build_publish:
           filters:
             branches:
               only:
-                - master
+                - 1.21.1
           requires:
             - version
