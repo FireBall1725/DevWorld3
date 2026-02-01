@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "devworld",
+  "version": "${version}",
+  "name": "DevWorld 3",
+  "description": "Developer test world creation from title screen",
+  "authors": ["FireBall1725"],
+  "contact": {},
+  "license": "All Rights Reserved",
+  "icon": "icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": ["ca.fireball1725.devworld.DevWorld3"],
+    "client": ["ca.fireball1725.devworld.client.events.DevWorldClientEvents"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.5",
+    "fabric-api": ">=0.104.0",
+    "minecraft": "~1.21.1"
+  }
+}
