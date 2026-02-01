@@ -14,7 +14,7 @@ jobs:
       - run:
           name: "Calculate the next version"
           command: |
-            export NEW_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version)
+            export NEW_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
             echo $NEW_VERSION > CI_VERSION
             echo $NEW_VERSION
       - persist_to_workspace:
