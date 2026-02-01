@@ -1,6 +1,8 @@
 package ca.fireball1725.devworld.neoforge.config;
 
 import ca.fireball1725.devworld.config.DevWorldConfig;
+import ca.fireball1725.devworld.config.ExternalConfigLoader;
+import ca.fireball1725.devworld.dataclass.ExternalConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -26,51 +28,91 @@ public class DevWorldConfigImpl implements DevWorldConfig {
 
     @Override
     public boolean getEnableBonusChest() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.worldConfig.bonusChest != null ? external.worldConfig.bonusChest : false;
+        }
         return CONFIG.enableBonusChest.get();
     }
 
     @Override
     public String getFlatworldGeneratorString() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.worldConfig.worldGenerationPreset;
+        }
         return CONFIG.flatworldGeneratorString.get();
     }
 
     @Override
     public boolean getRuleDaylight() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleDayLightCycle != null ? external.gameRulesConfig.ruleDayLightCycle : false;
+        }
         return CONFIG.ruleDaylight.get();
     }
 
     @Override
     public int getDaylightValue() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.daylightTime != null ? external.gameRulesConfig.daylightTime : 6000;
+        }
         return CONFIG.daylightValue.get();
     }
 
     @Override
     public boolean getRuleWeatherCycle() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleWeatherCycle != null ? external.gameRulesConfig.ruleWeatherCycle : false;
+        }
         return CONFIG.ruleWeatherCycle.get();
     }
 
     @Override
     public boolean getRuleDoFireTick() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleDoFireTick != null ? external.gameRulesConfig.ruleDoFireTick : false;
+        }
         return CONFIG.ruleDoFireTick.get();
     }
 
     @Override
     public boolean getRuleMobGriefing() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleMobGriefing != null ? external.gameRulesConfig.ruleMobGriefing : false;
+        }
         return CONFIG.ruleMobGriefing.get();
     }
 
     @Override
     public boolean getRuleDoMobSpawning() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleDoMobSpawning != null ? external.gameRulesConfig.ruleDoMobSpawning : true;
+        }
         return CONFIG.ruleDoMobSpawning.get();
     }
 
     @Override
     public boolean getRuleDisableRaids() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleDisableRaids;
+        }
         return CONFIG.ruleDisableRaids.get();
     }
 
     @Override
     public boolean getRuleDoInsomnia() {
+        ExternalConfig external = ExternalConfigLoader.getExternalConfig();
+        if (external != null) {
+            return external.gameRulesConfig.ruleDoInsomnia != null ? external.gameRulesConfig.ruleDoInsomnia : false;
+        }
         return CONFIG.ruleDoInsomnia.get();
     }
 
