@@ -117,7 +117,7 @@ afterEvaluate {
                 displayName = "DevWorld ${version} (Fabric)"
             }
 
-            additionalArtifact(project(':neoforge').tasks.remapJar) {
+            addArtifact(project(':neoforge').tasks.remapJar) {
                 displayName = "DevWorld ${version} (NeoForge)"
             }
         }
