@@ -38,7 +38,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew build -Pstonecutter.active=${{ matrix.version }}
+          ./gradlew :${{ matrix.version }}:build
 
       - name: Publish to platforms
         env:
@@ -47,14 +47,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_MODS: true
         run: |
-          ./gradlew publishMods -Pstonecutter.active=${{ matrix.version }}
+          ./gradlew :${{ matrix.version }}:publishMods
 
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            forge/build/libs/*.jar
-            fabric/build/libs/*.jar
-            neoforge/build/libs/*.jar
+          files: versions/${{ matrix.version }}/build/libs/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

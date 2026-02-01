@@ -57,12 +57,11 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
                 ScreenKeyboardEvents.afterKeyPress(screen).register((screen1, key, scancode, modifiers) -> {
                     eventScreenKeyPressed(screen1, key);
                 });
-            }
-        });
 
-        ScreenEvents.afterRender(null).register((screen, guiGraphics, mouseX, mouseY, tickDelta) -> {
-            if (screen instanceof TitleScreen titleScreen) {
-                eventScreenRender(screen, guiGraphics, mouseX, mouseY);
+                // Register render event for this specific screen instance
+                ScreenEvents.afterRender(screen).register((screen1, guiGraphics, mouseX, mouseY, tickDelta) -> {
+                    eventScreenRender(screen1, guiGraphics, mouseX, mouseY);
+                });
             }
         });
 
