@@ -67,7 +67,7 @@ publishMods {
         github {
             accessToken = System.getenv("GITHUB_TOKEN")
             repository = property("github_repository").toString()
-            commitish = "main"
+            // Don't specify commitish - will use the tag's commit
         }
     }
 }
