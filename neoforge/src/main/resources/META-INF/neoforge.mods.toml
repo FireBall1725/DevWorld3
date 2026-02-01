@@ -1,0 +1,34 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "devworld"
+version = "${version}"
+displayName = "DevWorld 3"
+authors = "FireBall1725"
+description = '''
+Developer test world creation from title screen with configurable flat world presets and game rules.
+'''
+logoFile = "devworldLogo.png"
+
+[[dependencies.devworld]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devworld]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devworld]]
+modId = "architectury"
+type = "required"
+versionRange = "[13.0.8,)"
+ordering = "AFTER"
+side = "BOTH"
