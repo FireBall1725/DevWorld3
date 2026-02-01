@@ -2,46 +2,8 @@ plugins {
     id 'gg.meza.stonecraft'
 }
 
-// Define Stonecutter loader constants
-def projectName = project.name
-def loader = 'forge'
-if (projectName.contains('fabric')) {
-    loader = 'fabric'
-} else if (projectName.contains('neoforge')) {
-    loader = 'neoforge'
-}
-
-stonecutter.constants {
-    match(loader, 'fabric', 'neoforge', 'forge')
-    it['forgeLike'] = (loader == 'forge' || loader == 'neoforge')
-}
-
 modSettings {
     runDirectory = rootProject.layout.projectDirectory.dir('run')
-}
-
-repositories {
-    maven { url = 'https://maven.parchmentmc.org' }
-}
-
-// Extract version from project name (e.g., "1.21.1-fabric" -> "1.21.1")
-// For root project, default to neoforge version
-def minecraftVersion = project.name.contains('-') ? project.name.replaceAll(/-.*$/, '') : '1.21.1'
-def versionKey = minecraftVersion.replaceAll('\\.', '_')
-
-dependencies {
-    // Core Minecraft dependency
-    minecraft "com.mojang:minecraft:${minecraftVersion}"
-
-    // Loader-specific dependencies
-    if (loader == 'fabric') {
-        modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-        modImplementation "net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version_${versionKey}")}"
-    } else if (loader == 'neoforge') {
-        "neoForge" "net.neoforged:neoforge:${property("neoforge_version_${versionKey}")}"
-    } else if (loader == 'forge') {
-        "forge" "net.minecraftforge:forge:${minecraftVersion}-${property("forge_version_${versionKey}")}"
-    }
 }
 
 // Publishing configuration
