@@ -6,7 +6,7 @@ import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
 /*? if forge {*/
-import net.minecraftforge.api.distmarker.Dist;
+/*import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-/*?}*/
+*//*?}*/
 /*? if neoforge {*/
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -27,8 +27,8 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 /*?}*/
 /*? if fabric {*/
-import net.fabricmc.api.ModInitializer;
-/*?}*/
+/*import net.fabricmc.api.ModInitializer;
+*//*?}*/
 
 /*? if forgeLike {*/
 @Mod(DevWorld3.MOD_ID)
@@ -38,7 +38,7 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     /*? if forge {*/
-    public DevWorld3() {
+    /*public DevWorld3() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
@@ -57,11 +57,10 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
             LOGGER.info("DevWorld3 client setup");
         }
     }
-    /*?}*/
+    *//*?}*/
     /*? if neoforge {*/
     public DevWorld3(IEventBus modEventBus) {
         modEventBus.addListener(this::commonSetup);
-        NeoForge.EVENT_BUS.register(this);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             new DevWorldClientEvents();
@@ -74,19 +73,20 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
         LOGGER.info("DevWorld3 common setup");
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onClientStartup(FMLClientSetupEvent event) {
-            LOGGER.info("DevWorld3 client setup");
-        }
-    }
+    // TODO: Fix NeoForge 1.21.1 EventBusSubscriber annotation
+    // @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    // public static class ClientModEvents {
+    //     @SubscribeEvent
+    //     public static void onClientStartup(FMLClientSetupEvent event) {
+    //         LOGGER.info("DevWorld3 client setup");
+    //     }
+    // }
     /*?}*/
     /*? if fabric {*/
-    @Override
+    /*@Override
     public void onInitialize() {
         LOGGER.info("DevWorld3 initializing on Fabric");
         Config.register();
     }
-    /*?}*/
+    *//*?}*/
 }

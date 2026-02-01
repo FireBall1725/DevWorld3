@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/FireBall1725/DevWorld3/issues"
 
 [[mods]]
 modId="devworld"
-version="${file.jarVersion}"
+version="${version}"
 displayName="DevWorld 3"
 logoFile="devworldLogo.png"
 authors="FireBall1725"
@@ -25,6 +25,6 @@ DevWorld 3 is a Minecraft Forge Mod that is designed to be an easy way to create
 [[dependencies.devworld]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.19,1.22)"
     ordering="NONE"
     side="BOTH"
