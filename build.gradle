@@ -2,6 +2,7 @@ plugins {
     id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '0.7.4' apply false
 }
 
 // Stonecutter properties
@@ -93,5 +94,50 @@ gradle.projectsEvaluated {
         if (!activeModules.contains(project.name)) {
             project.tasks.all { task -> task.enabled = false }
         }
+    }
+}
+
+// Publishing configuration
+apply plugin: 'me.modmuss50.mod-publish-plugin'
+
+publishMods {
+    file = project.file("${platform}/build/libs/DevWorld3-${platform}-${version}.jar")
+    changelog = rootProject.file("CHANGELOG.md").exists() ? rootProject.file("CHANGELOG.md").text : "No changelog provided"
+    type = project.hasProperty('curse_release_type') ? curse_release_type : BETA
+    modLoaders.add(platform == 'fabric' ? 'fabric' : (platform == 'neoforge' ? 'neoforge' : 'forge'))
+
+    dryRun = !System.getenv("PUBLISH_MODS")
+
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = project.hasProperty('curse_project_id') ? curse_project_id : ''
+        minecraftVersions.add(mcVersion)
+
+        requires {
+            if (platform == 'fabric') {
+                slug = "fabric-api"
+            } else if (platform == 'neoforge') {
+                slug = "architectury-api"
+            }
+        }
+    }
+
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "devworld"  // Set your Modrinth project ID
+        minecraftVersions.add(mcVersion)
+
+        requires {
+            if (platform == 'fabric') {
+                id = "P7dR8mSH"  // Fabric API
+            }
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "FireBall1725/DevWorld3"
+        commitish = providers.environmentVariable("GITHUB_SHA").orElse("main")
+        tagName = version.toString()
     }
 }
