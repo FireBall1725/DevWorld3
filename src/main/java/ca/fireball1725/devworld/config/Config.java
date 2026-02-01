@@ -67,11 +67,10 @@ public class Config {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
         *//*?}*/
         /*? if neoforge {*/
-        // TODO: Fix NeoForge 1.21.1 config registration API
-        // ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
-        // DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
-        // DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
-        // ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
+        ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+        DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
+        DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
+        ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
         /*?}*/
         /*? if fabric {*/
         /*// Fabric uses JSON config loaded/saved via DevWorldConfig

@@ -73,14 +73,8 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
         LOGGER.info("DevWorld3 common setup");
     }
 
-    // TODO: Fix NeoForge 1.21.1 EventBusSubscriber annotation
-    // @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    // public static class ClientModEvents {
-    //     @SubscribeEvent
-    //     public static void onClientStartup(FMLClientSetupEvent event) {
-    //         LOGGER.info("DevWorld3 client setup");
-    //     }
-    // }
+    // EventBusSubscriber annotation is not available in NeoForge 1.21.1
+    // Client events are registered directly in DevWorldClientEvents constructor
     /*?}*/
     /*? if fabric {*/
     /*@Override
