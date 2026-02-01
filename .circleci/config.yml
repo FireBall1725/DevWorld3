@@ -6,7 +6,11 @@ jobs:
     resource_class: medium
     working_directory: ~/repo
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_BRANCH
       - run:
           name: "Calculate the next version"
           command: |
