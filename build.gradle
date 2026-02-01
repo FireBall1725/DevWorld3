@@ -10,7 +10,24 @@ architectury {
 
 allprojects {
     group = rootProject.maven_group
-    version = rootProject.mod_version
+
+    // Version from CI_VERSION env var, git tags, or fallback to gradle.properties
+    if (System.getenv("CI_VERSION")) {
+        version = System.getenv("CI_VERSION")
+    } else {
+        try {
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--tags', '--abbrev=0'
+                standardOutput = stdout
+                ignoreExitValue = true
+            }
+            def gitVersion = stdout.toString().replace("\n", "").replace("\r", "").trim()
+            version = gitVersion.isEmpty() ? rootProject.mod_version : gitVersion
+        } catch (Exception e) {
+            version = rootProject.mod_version
+        }
+    }
 }
 
 subprojects {
