@@ -11,6 +11,7 @@ jobs:
           command: |
             git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
             git checkout $CIRCLE_SHA1
+            git fetch --tags
       - run:
           name: "Calculate the next version"
           command: |
