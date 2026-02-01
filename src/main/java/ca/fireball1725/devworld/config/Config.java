@@ -18,12 +18,12 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 /*?}*/
 /*? if neoforge {*/
-/*import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 /*?}*/
 /*? if fabric {*/
-/*import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,13 +67,13 @@ public class Config {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
         /*?}*/
         /*? if neoforge {*/
-        /*ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+        ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
         DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
         DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
         /*?}*/
         /*? if fabric {*/
-        /*// Fabric uses JSON config loaded/saved via DevWorldConfig
+        // Fabric uses JSON config loaded/saved via DevWorldConfig
         Path configPath = FabricLoader.getInstance().getConfigDir().resolve("devworld.json");
         try {
             if (!Files.exists(configPath)) {

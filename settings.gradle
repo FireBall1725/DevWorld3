@@ -22,7 +22,7 @@ stonecutter {
     centralScript = 'build.gradle'
 
     create(getRootProject()) {
-        versions '1.19.2-forge', '1.20.1-forge', '1.21.1-fabric', '1.21.1-neoforge'
+        versions '1.21.1-neoforge', '1.19.2-forge', '1.20.1-forge', '1.21.1-fabric'
     }
 }
 
