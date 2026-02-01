@@ -3,6 +3,7 @@ jobs:
   version:
     machine:
       image: ubuntu-2204:current
+    resource_class: medium
     working_directory: ~/repo
     steps:
       - checkout
