@@ -104,7 +104,6 @@ afterEvaluate {
     curseforge {
         apiKey = System.getenv('CURSE_API_KEY') ?: ''
 
-        // Fabric artifact
         project {
             id = curse_project_id
             changelog = file('CHANGELOG.md')
@@ -112,22 +111,13 @@ afterEvaluate {
 
             addGameVersion minecraft_version
             addGameVersion 'Fabric'
+            addGameVersion 'NeoForge'
 
             mainArtifact(project(':fabric').tasks.remapJar) {
                 displayName = "DevWorld ${version} (Fabric)"
             }
-        }
 
-        // NeoForge artifact
-        project {
-            id = curse_project_id
-            changelog = file('CHANGELOG.md')
-            releaseType = curse_release_type
-
-            addGameVersion minecraft_version
-            addGameVersion 'NeoForge'
-
-            mainArtifact(project(':neoforge').tasks.remapJar) {
+            additionalArtifact(project(':neoforge').tasks.remapJar) {
                 displayName = "DevWorld ${version} (NeoForge)"
             }
         }
