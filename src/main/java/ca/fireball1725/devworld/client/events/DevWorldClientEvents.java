@@ -16,17 +16,19 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
-/*?} elif neoforge {*/
+/*?} else {*/
+/*? if neoforge {*/
 /*import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-/*?} elif fabric {*/
+/*?} else */
 /*import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.client.gui.GuiGraphics;
+/*?}*/
 /*?}*/
 
 public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitializer*//*?}*/ {
@@ -59,7 +61,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
 
         ServerLifecycleEvents.SERVER_STARTED.register(this::eventServerStarted);
     }
-    /*?} else {*/
+    /*?} else */
     public DevWorldClientEvents() {
         devWorldUtils = new DevWorldUtils();
 
@@ -68,14 +70,15 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
         MinecraftForge.EVENT_BUS.addListener(this::eventScreenRenderPost);
         MinecraftForge.EVENT_BUS.addListener(this::eventScreenInit);
         MinecraftForge.EVENT_BUS.addListener(this::eventServerStarted);
-        /*?} elif neoforge {*/
+        /*?} else {*/
+/*? if neoforge {*/
         /*NeoForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
         NeoForge.EVENT_BUS.addListener(this::eventScreenRenderPost);
         NeoForge.EVENT_BUS.addListener(this::eventScreenInit);
         NeoForge.EVENT_BUS.addListener(this::eventServerStarted);
         /*?}*/
     }
-    /*? }*/
+    /*?}*/
 
     /*? if forge {*/
     public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
@@ -129,7 +132,8 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     public void eventServerStarted(ServerStartedEvent event) {
         handleServerStarted(event.getServer().overworld());
     }
-    /*?} elif neoforge {*/
+    /*?} else {*/
+/*? if neoforge {*/
     /*public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
             if (event.getKeyCode() == 340) {
@@ -179,7 +183,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     public void eventServerStarted(ServerStartedEvent event) {
         handleServerStarted(event.getServer().overworld());
     }
-    /*?} elif fabric {*/
+    /*?} else */
     /*private void eventScreenKeyPressed(net.minecraft.client.gui.screens.Screen screen, int key) {
         if (key == 340) {
             keyShiftCount++;
@@ -224,6 +228,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
         handleServerStarted(server.overworld());
     }
     /*?}*/
+    /*?}*/
 
     private void initButtons(net.minecraft.client.gui.screens.Screen screen, int width, int height) {
         int buttonY = height / 4 + 48;
@@ -255,7 +260,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
                     keyShiftCount = 0;
                 }
         ).bounds(buttonX, buttonY, 84, 20).build();
-        /*?} else {*/
+        /*?} else */
         /*buttonCreate = new Button(
                 buttonX,
                 buttonY,

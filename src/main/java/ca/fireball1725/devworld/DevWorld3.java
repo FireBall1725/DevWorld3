@@ -15,7 +15,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-/*?} elif neoforge {*/
+/*?} else {*/
+/*? if neoforge {*/
 /*import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,8 +25,9 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-/*?} elif fabric {*/
+/*?} else */
 /*import net.fabricmc.api.ModInitializer;
+/*?}*/
 /*?}*/
 
 /*? if forgeLike {*/
@@ -55,7 +57,8 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
             LOGGER.info("DevWorld3 client setup");
         }
     }
-    /*?} elif neoforge {*/
+    /*?} else {*/
+/*? if neoforge {*/
     /*public DevWorld3(IEventBus modEventBus) {
         modEventBus.addListener(this::commonSetup);
         NeoForge.EVENT_BUS.register(this);
@@ -78,11 +81,12 @@ public class DevWorld3 /*? if fabric {*//*implements ModInitializer*//*?}*/ {
             LOGGER.info("DevWorld3 client setup");
         }
     }
-    /*?} elif fabric {*/
+    /*?} else */
     /*@Override
     public void onInitialize() {
         LOGGER.info("DevWorld3 initializing on Fabric");
         Config.register();
     }
+    /*?}*/
     /*?}*/
 }

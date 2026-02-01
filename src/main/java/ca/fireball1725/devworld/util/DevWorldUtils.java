@@ -7,35 +7,22 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.Util;
-import net.minecraft.client.Game;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 import net.minecraft.client.gui.screens.PresetFlatWorldScreen;
-import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-import net.minecraft.world.level.levelgen.presets.WorldPresets;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
-import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
@@ -53,6 +40,26 @@ import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+/*? if <1.21 {*/
+import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.DataPackConfig;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.presets.WorldPresets;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
+/*?} else */
+/*import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.WorldDataConfiguration;
+import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.WorldDimensions;
+import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.levelgen.flat.FlatLevelSource;
+import net.minecraft.world.level.levelgen.presets.WorldPreset;
+/*?}*/
+
 public class DevWorldUtils {
     private final String worldName = "DevWorld";
     private final Minecraft minecraft = Minecraft.getInstance();
@@ -62,10 +69,6 @@ public class DevWorldUtils {
     String resultFolder;
     private final Logger LOGGER = LogUtils.getLogger();
 
-    /**
-     * Create a new dev world
-     * @throws Exception if there is an issue with the save
-     */
     public void createDevWorld() throws Exception {
         this.resultFolder = this.worldName.trim();
         Minecraft.getInstance().setScreen(null);
@@ -75,6 +78,7 @@ public class DevWorldUtils {
         if (optional.isPresent()) {
             this.removeTempDataPackDir();
 
+            /*? if <1.21 {*/
             PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource());
             WorldLoader.InitConfig worldLoader$InitConfig = createDefaultLoadConfig(
                     packrepository,
@@ -90,9 +94,9 @@ public class DevWorldUtils {
                         RegistryAccess.Frozen registryAccess$Frozen = RegistryAccess.builtinCopy().freeze();
                         WorldGenSettings worldgensettings = WorldPresets.createNormalWorldFromPreset(
                                 registryAccess$Frozen,
-                                0, // World seed
-                                false, // Generate structures
-                                DevWorldConfig.ENABLE_BONUS_CHEST.get() // Create bonus chest
+                                0,
+                                false,
+                                DevWorldConfig.ENABLE_BONUS_CHEST.get()
                         );
                         return Pair.of(worldgensettings, registryAccess$Frozen);
                     },
@@ -114,9 +118,9 @@ public class DevWorldUtils {
             FlatLevelGeneratorSettings flatLevelGeneratorSettings = PresetFlatWorldScreen.fromString(
                     worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY),
                     worldCreationContext.registryAccess().registryOrThrow(Registry.STRUCTURE_SET_REGISTRY),
-                    DevWorldConfig.FLATWORLD_GENERATOR_STRING.get(), // World Generator Configuration String
+                    DevWorldConfig.FLATWORLD_GENERATOR_STRING.get(),
                     new FlatLevelGeneratorSettings(
-                            Optional.empty(), // Structure overrides
+                            Optional.empty(),
                             worldCreationContext.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)
                     )
             );
@@ -141,15 +145,36 @@ public class DevWorldUtils {
                     finalWorldCreationContext.registryAccess(),
                     worldData
             );
+            /*?} else */
+            /*// 1.21+ simplified world creation
+            LevelSettings levelSettings = this.createLevelSettings();
+
+            // Create default world options
+            WorldOptions worldOptions = new WorldOptions(0L, false, DevWorldConfig.ENABLE_BONUS_CHEST.get());
+
+            // Create flat level generator settings
+            RegistryAccess.Frozen registryAccess = this.minecraft.getConnection() != null
+                    ? this.minecraft.getConnection().registryAccess()
+                    : RegistryAccess.fromRegistryOfRegistries(BuiltinRegistries.REGISTRY);
+
+            // Create world data with flat world preset
+            WorldData worldData = new PrimaryLevelData(
+                    levelSettings,
+                    worldOptions,
+                    Lifecycle.stable()
+            );
+
+            this.minecraft.createWorldOpenFlows().createFreshLevel(
+                    this.resultFolder,
+                    levelSettings,
+                    worldOptions,
+                    (context) -> WorldDimensions.BUILTIN.get()
+            );
+            /*?}*/
         }
     }
 
-    /**
-     *
-     * @param isHardCore
-     * @param worldCreationContext
-     * @return
-     */
+    /*? if <1.21 {*/
     public WorldCreationContext createFinalSettings(boolean isHardCore, WorldCreationContext worldCreationContext) {
         OptionalLong optionallong = WorldGenSettings.parseSeed("0");
         return worldCreationContext.withSettings((worldSettings) -> {
@@ -157,20 +182,6 @@ public class DevWorldUtils {
         });
     }
 
-    /**
-     * Show loading screen
-     */
-    private void queueLoadScreen() {
-        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(this.PREPARING_WORLD_DATA));
-    }
-
-    /**
-     * Flat world generator
-     * @param registryAccess$Frozen frozen registry access
-     * @param worldGenSettings world generator settings
-     * @param flatLevelGeneratorSettings flat level generator settings
-     * @return world generator settings with overworld replaced with the flat world generator
-     */
     private WorldGenSettings flatWorldGenerator(
             RegistryAccess.Frozen registryAccess$Frozen,
             WorldGenSettings worldGenSettings,
@@ -181,38 +192,6 @@ public class DevWorldUtils {
         return WorldGenSettings.replaceOverworldGenerator(registryAccess$Frozen, worldGenSettings, chunkGenerator);
     }
 
-    /**
-     * Create the level settings
-     * @return the level settings
-     */
-    private LevelSettings createLevelSettings() {
-        String s = worldName.trim();
-        GameRules gameRules = new GameRules();
-        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.RULE_DAYLIGHT.get(), null);
-        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.RULE_WEATHER_CYCLE.get(), null);
-        gameRules.getRule(GameRules.RULE_DOFIRETICK).set(DevWorldConfig.RULE_DOFIRETICK.get(), null);
-        gameRules.getRule(GameRules.RULE_MOBGRIEFING).set(DevWorldConfig.RULE_MOBGRIEFING.get(), null);
-        gameRules.getRule(GameRules.RULE_DOMOBSPAWNING).set(DevWorldConfig.RULE_DOMOBSPAWNING.get(), null);
-        gameRules.getRule(GameRules.RULE_DISABLE_RAIDS).set(DevWorldConfig.RULE_DISABLE_RAIDS.get(), null);
-        gameRules.getRule(GameRules.RULE_DOINSOMNIA).set(DevWorldConfig.RULE_DOINSOMNIA.get(), null);
-
-        return new LevelSettings(
-                s,
-                GameType.CREATIVE,
-                false,
-                Difficulty.NORMAL,
-                true,
-                gameRules,
-                DataPackConfig.DEFAULT
-        );
-    }
-
-    /**
-     * Create default load configuration
-     * @param packRepository pack repository
-     * @param dataPackConfig data pack configuration
-     * @return World loader configuration
-     */
     private WorldLoader.InitConfig createDefaultLoadConfig(
             PackRepository packRepository,
             DataPackConfig dataPackConfig
@@ -228,11 +207,46 @@ public class DevWorldUtils {
                 2
         );
     }
+    /*?}*/
 
-    /**
-     * Create new world directory
-     * @return Level storage source
-     */
+    private void queueLoadScreen() {
+        this.minecraft.forceSetScreen(new GenericDirtMessageScreen(this.PREPARING_WORLD_DATA));
+    }
+
+    private LevelSettings createLevelSettings() {
+        String s = worldName.trim();
+        GameRules gameRules = new GameRules();
+        gameRules.getRule(GameRules.RULE_DAYLIGHT).set(DevWorldConfig.RULE_DAYLIGHT.get(), null);
+        gameRules.getRule(GameRules.RULE_WEATHER_CYCLE).set(DevWorldConfig.RULE_WEATHER_CYCLE.get(), null);
+        gameRules.getRule(GameRules.RULE_DOFIRETICK).set(DevWorldConfig.RULE_DOFIRETICK.get(), null);
+        gameRules.getRule(GameRules.RULE_MOBGRIEFING).set(DevWorldConfig.RULE_MOBGRIEFING.get(), null);
+        gameRules.getRule(GameRules.RULE_DOMOBSPAWNING).set(DevWorldConfig.RULE_DOMOBSPAWNING.get(), null);
+        gameRules.getRule(GameRules.RULE_DISABLE_RAIDS).set(DevWorldConfig.RULE_DISABLE_RAIDS.get(), null);
+        gameRules.getRule(GameRules.RULE_DOINSOMNIA).set(DevWorldConfig.RULE_DOINSOMNIA.get(), null);
+
+        /*? if <1.21 {*/
+        return new LevelSettings(
+                s,
+                GameType.CREATIVE,
+                false,
+                Difficulty.NORMAL,
+                true,
+                gameRules,
+                DataPackConfig.DEFAULT
+        );
+        /*?} else */
+        /*return new LevelSettings(
+                s,
+                GameType.CREATIVE,
+                false,
+                Difficulty.NORMAL,
+                true,
+                gameRules,
+                WorldDataConfiguration.DEFAULT
+        );
+        /*?}*/
+    }
+
     private Optional<LevelStorageSource.LevelStorageAccess> createNewWorldDirectory() {
         try {
             LevelStorageSource.LevelStorageAccess levelStorageSource$LevelStorageAccess =
@@ -283,12 +297,6 @@ public class DevWorldUtils {
         return Optional.empty();
     }
 
-    /**
-     * Copy between directories
-     * @param pathFromDir directory to copy from
-     * @param pathToDir directory to copy to
-     * @param pathFilePath path of where files are
-     */
     private void copyBetweenDirs(Path pathFromDir, Path pathToDir, Path pathFilePath) {
         try {
             Util.copyBetweenDirs(pathFromDir, pathToDir, pathFilePath);
@@ -298,9 +306,6 @@ public class DevWorldUtils {
         }
     }
 
-    /**
-     * Remove the temporary data pack directory
-     */
     private void removeTempDataPackDir() {
         if (this.tempDataPackDir != null) {
             try {
@@ -337,26 +342,16 @@ public class DevWorldUtils {
 
     }
 
-    /**
-     * Check to see if there is a dev world save
-     * @return boolean of if the save exists
-     */
     public boolean saveExists() {
         LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
         return levelstoragesource.levelExists(this.worldName);
     }
 
-    /**
-     * Load the dev world
-     */
     public void loadDevWorld() {
         assert this.minecraft.screen != null;
         this.minecraft.createWorldOpenFlows().loadLevel(this.minecraft.screen, this.worldName);
     }
 
-    /**
-     * Delete the dev world
-     */
     public void deleteDevWorld() {
         LevelStorageSource levelStorageSource = this.minecraft.getLevelSource();
 
