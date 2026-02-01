@@ -9,8 +9,8 @@ jobs:
       - run:
           name: Checkout code via HTTPS
           command: |
-            git clone https://github.com/FireBall1725/DevWorld3.git .
-            git checkout $CIRCLE_BRANCH
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - run:
           name: "Calculate the next version"
           command: |
@@ -37,8 +37,8 @@ jobs:
       - run:
           name: Checkout code via HTTPS
           command: |
-            git clone https://github.com/FireBall1725/DevWorld3.git .
-            git checkout $CIRCLE_BRANCH
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - attach_workspace:
           at: .
       - run:
@@ -67,8 +67,8 @@ jobs:
       - run:
           name: Checkout code via HTTPS
           command: |
-            git clone https://github.com/FireBall1725/DevWorld3.git .
-            git checkout $CIRCLE_BRANCH
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - attach_workspace:
           at: .
       - run:
