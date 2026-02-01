@@ -1,0 +1,114 @@
+version: 2
+jobs:
+  version:
+    machine:
+      image: ubuntu-2004:2022.04.2
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: "Calculate the next version"
+          command: |
+            export NEW_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version)
+            echo $NEW_VERSION > CI_VERSION
+            echo $NEW_VERSION
+      - persist_to_workspace:
+          root: .
+          paths:
+            - CI_VERSION
+
+  build:
+    docker:
+      - image: gradle:8.12.1-jdk21
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build"
+          command: |
+            export CI_VERSION=`cat CI_VERSION`
+            gradle build
+      - store_artifacts:
+          path: build/libs
+          destination: artifact-file
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
+
+  build_publish:
+    docker:
+      - image: gradle:8.12.1-jdk21
+    working_directory: ~/repo
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Create Version Tag"
+          command: |
+            export CI_VERSION=`cat CI_VERSION`
+            echo "Version: $CI_VERSION"
+            git config --global user.email "firemod@fireball1725.ca"
+            git config --global user.name "firemod"
+            git tag -a $CI_VERSION -m "v$CI_VERSION"
+
+      - run:
+          name: "Generate Changelog Markdown"
+          command: |
+            wget https://github.com/git-chglog/git-chglog/releases/download/0.9.1/git-chglog_linux_amd64 -O git-chglog
+            chmod +x git-chglog
+            ./git-chglog -o CHANGELOG.md $(git describe --tags $(git rev-list --tags --max-count=1))
+            cat CHANGELOG.md
+
+      - run:
+          name: "Build"
+          command: |
+            export CI_VERSION=`cat CI_VERSION`
+            gradle build
+
+      - run:
+          name: "Publish to Curse"
+          command: |
+            export CI_VERSION=`cat CI_VERSION`
+            gradle curseforge
+
+      - run:
+          name: "Publish to GitHub"
+          command: |
+            export CI_VERSION=`cat CI_VERSION`
+            gradle githubRelease
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - version
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+          requires:
+            - version
+      - build_publish:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - version
