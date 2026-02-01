@@ -18,13 +18,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
 /*?}*/
 /*? if neoforge {*/
-/*import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 /*?}*/
 /*? if fabric {*/
-/*import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -39,7 +39,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     private DevWorldUtils devWorldUtils;
 
     /*? if fabric {*/
-    /*@Override
+    @Override
     public void onInitializeClient() {
         devWorldUtils = new DevWorldUtils();
 
@@ -73,7 +73,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
         MinecraftForge.EVENT_BUS.addListener(this::eventServerStarted);
         /*?}*/
         /*? if neoforge {*/
-        /*NeoForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
+        NeoForge.EVENT_BUS.addListener(this::eventScreenKeyPressedPost);
         NeoForge.EVENT_BUS.addListener(this::eventScreenRenderPost);
         NeoForge.EVENT_BUS.addListener(this::eventScreenInit);
         NeoForge.EVENT_BUS.addListener(this::eventServerStarted);
@@ -135,7 +135,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     }
     /*?}*/
     /*? if neoforge {*/
-    /*public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
+    public void eventScreenKeyPressedPost(ScreenEvent.KeyPressed.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
             if (event.getKeyCode() == 340) {
                 keyShiftCount++;
@@ -186,7 +186,7 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
     }
     /*?}*/
     /*? if fabric {*/
-    /*private void eventScreenKeyPressed(net.minecraft.client.gui.screens.Screen screen, int key) {
+    private void eventScreenKeyPressed(net.minecraft.client.gui.screens.Screen screen, int key) {
         if (key == 340) {
             keyShiftCount++;
         }
@@ -261,8 +261,8 @@ public class DevWorldClientEvents /*? if fabric {*//*implements ClientModInitial
                     keyShiftCount = 0;
                 }
         ).bounds(buttonX, buttonY, 84, 20).build();
-        /*?} else */
-        /*buttonCreate = new Button(
+        /*?} else {*/
+        buttonCreate = new Button(
                 buttonX,
                 buttonY,
                 84,

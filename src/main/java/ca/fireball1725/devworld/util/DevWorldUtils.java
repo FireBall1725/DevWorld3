@@ -49,8 +49,8 @@ import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
-/*?} else */
-/*import net.minecraft.core.Holder;
+/*?} else {*/
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -145,8 +145,8 @@ public class DevWorldUtils {
                     finalWorldCreationContext.registryAccess(),
                     worldData
             );
-            /*?} else */
-            /*// 1.21+ simplified world creation
+            /*?} else {*/
+            // 1.21+ simplified world creation
             LevelSettings levelSettings = this.createLevelSettings();
 
             // Create default world options
@@ -234,8 +234,8 @@ public class DevWorldUtils {
                 gameRules,
                 DataPackConfig.DEFAULT
         );
-        /*?} else */
-        /*return new LevelSettings(
+        /*?} else {*/
+        return new LevelSettings(
                 s,
                 GameType.CREATIVE,
                 false,

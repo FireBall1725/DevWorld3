@@ -4,10 +4,10 @@ package ca.fireball1725.devworld.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 /*?}*/
 /*? if neoforge {*/
-/*import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 /*?}*/
 /*? if fabric {*/
-/*import com.google.gson.Gson;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -80,7 +80,7 @@ public class DevWorldConfig {
     }
     /*?}*/
     /*? if neoforge {*/
-    /*public static ModConfigSpec.ConfigValue<String> FLATWORLD_GENERATOR_STRING;
+    public static ModConfigSpec.ConfigValue<String> FLATWORLD_GENERATOR_STRING;
     public static ModConfigSpec.ConfigValue<Boolean> ENABLE_BONUS_CHEST;
     public static ModConfigSpec.ConfigValue<Boolean> RULE_DAYLIGHT;
     public static ModConfigSpec.ConfigValue<Integer> DAYLIGHT_VALUE;
@@ -144,7 +144,7 @@ public class DevWorldConfig {
     }
     /*?}*/
     /*? if fabric {*/
-    /*// Fabric config - simple static values loaded from JSON
+    // Fabric config - simple static values loaded from JSON
     private static FabricConfigData configData = new FabricConfigData();
 
     public static void initDefaults() {
