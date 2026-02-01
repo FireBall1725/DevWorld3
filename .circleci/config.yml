@@ -2,10 +2,15 @@ version: 2
 jobs:
   version:
     machine:
-      image: ubuntu-2004:2022.04.2
+      image: ubuntu-2204:current
+    resource_class: medium
     working_directory: ~/repo
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - run:
           name: "Calculate the next version"
           command: |
@@ -29,7 +34,11 @@ jobs:
       TERM: dumb
 
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - attach_workspace:
           at: .
       - run:
@@ -55,7 +64,11 @@ jobs:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_SHA1
       - attach_workspace:
           at: .
       - run:
