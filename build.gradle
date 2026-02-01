@@ -132,6 +132,12 @@ afterEvaluate {
             }
         }
     }
+
+    // Ensure curseforge task depends on building the artifacts
+    tasks.named('curseforge').configure {
+        dependsOn project(':fabric').tasks.remapJar
+        dependsOn project(':neoforge').tasks.remapJar
+    }
 }
 
 String readChangelogString(String filePath) {
@@ -156,5 +162,11 @@ afterEvaluate {
         overwrite true
         tagName = version
         releaseName = "v${version}"
+    }
+
+    // Ensure githubRelease task depends on building the artifacts
+    tasks.named('githubRelease').configure {
+        dependsOn project(':fabric').tasks.remapJar
+        dependsOn project(':neoforge').tasks.remapJar
     }
 }
