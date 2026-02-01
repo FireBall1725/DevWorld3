@@ -16,17 +16,17 @@ import java.util.Scanner;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-/*?} else {*/
+/*?}*/
 /*? if neoforge {*/
 /*import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-/*?} else */
+/*?}*/
+/*? if fabric {*/
 /*import net.fabricmc.loader.api.FabricLoader;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-/*?}*/
 /*?}*/
 
 public class Config {
@@ -65,13 +65,14 @@ public class Config {
         DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
         DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
-        /*?} else {*/
+        /*?}*/
         /*? if neoforge {*/
         /*ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
         DevWorldConfig.registerClientConfig(CLIENT_BUILDER);
         DevWorldConfig.registerGameRuleConfig(CLIENT_BUILDER);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
-        /*?} else */
+        /*?}*/
+        /*? if fabric {*/
         /*// Fabric uses JSON config loaded/saved via DevWorldConfig
         Path configPath = FabricLoader.getInstance().getConfigDir().resolve("devworld.json");
         try {
@@ -83,7 +84,6 @@ public class Config {
             LOGGER.error("Failed to load Fabric config", ex);
             DevWorldConfig.initDefaults();
         }
-        /*?}*/
         /*?}*/
     }
 

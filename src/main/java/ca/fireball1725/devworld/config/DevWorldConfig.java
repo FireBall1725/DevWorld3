@@ -2,10 +2,11 @@ package ca.fireball1725.devworld.config;
 
 /*? if forge {*/
 import net.minecraftforge.common.ForgeConfigSpec;
-/*?} else {*/
+/*?}*/
 /*? if neoforge {*/
 /*import net.neoforged.neoforge.common.ModConfigSpec;
-/*?} else */
+/*?}*/
+/*? if fabric {*/
 /*import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -77,8 +78,8 @@ public class DevWorldConfig {
 
         CLIENT_BUILDER.pop();
     }
-    /*?} else {*/
-/*? if neoforge {*/
+    /*?}*/
+    /*? if neoforge {*/
     /*public static ModConfigSpec.ConfigValue<String> FLATWORLD_GENERATOR_STRING;
     public static ModConfigSpec.ConfigValue<Boolean> ENABLE_BONUS_CHEST;
     public static ModConfigSpec.ConfigValue<Boolean> RULE_DAYLIGHT;
@@ -141,7 +142,8 @@ public class DevWorldConfig {
 
         CLIENT_BUILDER.pop();
     }
-    /*?} else */
+    /*?}*/
+    /*? if fabric {*/
     /*// Fabric config - simple static values loaded from JSON
     private static FabricConfigData configData = new FabricConfigData();
 
@@ -204,6 +206,5 @@ public class DevWorldConfig {
         public boolean ruleDisableRaids = true;
         public boolean ruleDoInsomnia = false;
     }
-    /*?}*/
     /*?}*/
 }
