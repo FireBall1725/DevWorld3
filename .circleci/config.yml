@@ -42,6 +42,7 @@ jobs:
           command: |
             git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
             git checkout $CIRCLE_SHA1
+            git fetch --tags
       - attach_workspace:
           at: .
       - run:
@@ -75,6 +76,7 @@ jobs:
           command: |
             git clone --branch $CIRCLE_BRANCH https://github.com/FireBall1725/DevWorld3.git .
             git checkout $CIRCLE_SHA1
+            git fetch --tags
       - attach_workspace:
           at: .
       - run:
