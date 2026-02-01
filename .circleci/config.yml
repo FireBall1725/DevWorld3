@@ -115,13 +115,13 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
+                - 1.21.1
           requires:
             - version
       - build_publish:
           filters:
             branches:
               only:
-                - master
+                - 1.21.1
           requires:
             - version
