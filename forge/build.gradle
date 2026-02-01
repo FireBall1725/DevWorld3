@@ -1,0 +1,53 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+def mcVersion = stonecutter.current.version.split('-')[0]
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+
+dependencies {
+    //? if forge-1.19.2
+    forge "net.minecraftforge:forge:1.19.2-${rootProject.forge_version_1_19_2}"
+    //? if forge-1.20.1
+    /*forge "net.minecraftforge:forge:1.20.1-${rootProject.forge_version_1_20_1}"*/
+
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':common', configuration: 'transformProductionForge')
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    filesMatching('META-INF/mods.toml') {
+        expand version: project.version,
+               minecraft_version: mcVersion
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+}

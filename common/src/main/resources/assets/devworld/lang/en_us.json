@@ -1,0 +1,9 @@
+{
+  "devworld.menu.new": "New World",
+  "devworld.menu.load": "Load World",
+  "devworld.menu.delete": "Delete World",
+
+  "devworld.title": "DevWorld 3",
+
+  "devworld.hover.delete": "Press [LEFT SHIFT] two times to enable delete"
+}
