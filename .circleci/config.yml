@@ -34,7 +34,11 @@ jobs:
       TERM: dumb
 
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_BRANCH
       - attach_workspace:
           at: .
       - run:
@@ -60,7 +64,11 @@ jobs:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
-      - checkout
+      - run:
+          name: Checkout code via HTTPS
+          command: |
+            git clone https://github.com/FireBall1725/DevWorld3.git .
+            git checkout $CIRCLE_BRANCH
       - attach_workspace:
           at: .
       - run:
