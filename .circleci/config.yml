@@ -24,7 +24,7 @@ jobs:
 
   build:
     docker:
-      - image: gradle:8.12.1-jdk21
+      - image: gradle:8.12.1-jdk17
 
     working_directory: ~/repo
 
@@ -57,7 +57,7 @@ jobs:
 
   build_publish:
     docker:
-      - image: gradle:8.12.1-jdk21
+      - image: gradle:8.12.1-jdk17
     working_directory: ~/repo
     environment:
       # Customize the JVM maximum heap limit
