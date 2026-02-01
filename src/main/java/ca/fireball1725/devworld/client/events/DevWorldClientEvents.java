@@ -3,10 +3,8 @@ package ca.fireball1725.devworld.client.events;
 import ca.fireball1725.devworld.config.Config;
 import ca.fireball1725.devworld.config.DevWorldConfig;
 import ca.fireball1725.devworld.util.DevWorldUtils;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
@@ -72,10 +70,8 @@ public class DevWorldClientEvents {
             int textY = event.getScreen().height / 4 + 38;
             int textX = event.getScreen().width / 2 + 104 + (84 / 2);
 
-            // Render the mod name on the screen
-            PoseStack poseStack = new PoseStack();
-            GuiComponent.drawCenteredString(
-                    poseStack,
+            // Render the mod name on the screen using GuiGraphics from event
+            event.getGuiGraphics().drawCenteredString(
                     Minecraft.getInstance().font,
                     Component.translatable("devworld.title"),
                     textX,
@@ -85,8 +81,8 @@ public class DevWorldClientEvents {
 
             // Render tooltip if over the delete button
             if (buttonDelete.isHoveredOrFocused() && buttonDelete.visible && !buttonDelete.active) {
-                titleScreen.renderTooltip(
-                        poseStack,
+                event.getGuiGraphics().renderTooltip(
+                        Minecraft.getInstance().font,
                         Component.translatable("devworld.hover.delete"),
                         event.getMouseX(),
                         event.getMouseY()
@@ -97,20 +93,16 @@ public class DevWorldClientEvents {
 
     /**
      * This event gets fired when a screen initialises
-     * @param event ScreenEvent.Init object
+     * @param event ScreenEvent.Init.Post object
      */
-    public void eventScreenInit(ScreenEvent.Init event) {
+    public void eventScreenInit(ScreenEvent.Init.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
             // Set the initial x and y positions
             int buttonY = event.getScreen().height / 4 + 48;
             int buttonX = event.getScreen().width / 2 + 104;
 
-            // Create the create dev world button
-            buttonCreate = new Button(
-                    buttonX,
-                    buttonY,
-                    84,
-                    20,
+            // Create the create dev world button using Button.builder
+            buttonCreate = Button.builder(
                     Component.translatable("devworld.menu.new"),
                     button -> {
                         try {
@@ -119,33 +111,24 @@ public class DevWorldClientEvents {
                             LOGGER.error(ex.getMessage());
                         }
                     }
-            );
+            ).bounds(buttonX, buttonY, 84, 20).build();
 
-            // Create the load dev world button
-            buttonLoad = new Button(
-                    buttonX,
-                    buttonY,
-                    84,
-                    20,
+            // Create the load dev world button using Button.builder
+            buttonLoad = Button.builder(
                     Component.translatable("devworld.menu.load"),
-                    button -> {
-                        devWorldUtils.loadDevWorld();
-                    }
-            );
+                    button -> devWorldUtils.loadDevWorld()
+            ).bounds(buttonX, buttonY, 84, 20).build();
+
             buttonY += 24;
 
-            // Create the delete dev world button
-            buttonDelete = new Button(
-                    buttonX,
-                    buttonY,
-                    84,
-                    20,
+            // Create the delete dev world button using Button.builder
+            buttonDelete = Button.builder(
                     Component.translatable("devworld.menu.delete"),
                     button -> {
                         devWorldUtils.deleteDevWorld();
                         keyShiftCount = 0;
                     }
-            );
+            ).bounds(buttonX, buttonY, 84, 20).build();
 
             // Set all the buttons to invisible
             buttonCreate.visible = false;

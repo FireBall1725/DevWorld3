@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'net.minecraftforge.gradle' version '6.0.+'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'com.github.breadmoirai.github-release' version '2.3.7'
 }
@@ -34,7 +34,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
-    mappings channel: 'official', version: '1.19'
+    mappings channel: 'official', version: '1.20.1'
     runs {
         client {
             workingDirectory project.file('run')
@@ -101,7 +101,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19-41.1.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
 }
 
 jar {
@@ -187,7 +187,7 @@ githubRelease {
     body {
         return readChangelogString("CHANGELOG.md")
     }
-    releaseAssets jar.destinationDir.listFiles()
+    releaseAssets jar.destinationDirectory.asFile.get().listFiles()
     overwrite true
     tagName = project.version
     releaseName = "v${project.version}"

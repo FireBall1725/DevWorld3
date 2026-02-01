@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[47,)"
 license="AGPL License"
 issueTrackerURL="https://github.com/FireBall1725/DevWorld3/issues"
 
@@ -18,13 +18,13 @@ DevWorld 3 is a Minecraft Forge Mod that is designed to be an easy way to create
 [[dependencies.devworld]]
     modId="forge"
     mandatory=true
-    versionRange="[41,)"
+    versionRange="[47,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.devworld]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.20.1,1.21)"
     ordering="NONE"
     side="BOTH"
