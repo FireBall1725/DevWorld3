@@ -99,34 +99,37 @@ subprojects {
 
 apply plugin: 'info.u_team.curse_gradle_uploader'
 
-curseforge {
-    apiKey = System.getenv('CURSE_API_KEY') ?: ''
+// Configure after evaluation to ensure subproject tasks are available
+afterEvaluate {
+    curseforge {
+        apiKey = System.getenv('CURSE_API_KEY') ?: ''
 
-    // Fabric artifact
-    project {
-        id = curse_project_id
-        changelog = file('CHANGELOG.md')
-        releaseType = curse_release_type
+        // Fabric artifact
+        project {
+            id = curse_project_id
+            changelog = file('CHANGELOG.md')
+            releaseType = curse_release_type
 
-        addGameVersion minecraft_version
-        addGameVersion 'Fabric'
+            addGameVersion minecraft_version
+            addGameVersion 'Fabric'
 
-        mainArtifact(file("fabric/build/libs/${archives_name}-fabric-${version}.jar")) {
-            displayName = "DevWorld ${version} (Fabric)"
+            mainArtifact(project(':fabric').tasks.remapJar) {
+                displayName = "DevWorld ${version} (Fabric)"
+            }
         }
-    }
 
-    // NeoForge artifact
-    project {
-        id = curse_project_id
-        changelog = file('CHANGELOG.md')
-        releaseType = curse_release_type
+        // NeoForge artifact
+        project {
+            id = curse_project_id
+            changelog = file('CHANGELOG.md')
+            releaseType = curse_release_type
 
-        addGameVersion minecraft_version
-        addGameVersion 'NeoForge'
+            addGameVersion minecraft_version
+            addGameVersion 'NeoForge'
 
-        mainArtifact(file("neoforge/build/libs/${archives_name}-neoforge-${version}.jar")) {
-            displayName = "DevWorld ${version} (NeoForge)"
+            mainArtifact(project(':neoforge').tasks.remapJar) {
+                displayName = "DevWorld ${version} (NeoForge)"
+            }
         }
     }
 }
@@ -140,16 +143,18 @@ String readChangelogString(String filePath) {
     return ""
 }
 
-githubRelease {
-    token System.getenv("GITHUB_TOKEN") ?: "InvalidP@ssword"
-    owner System.getenv("CIRCLE_PROJECT_USERNAME") ?: ""
-    repo System.getenv("CIRCLE_PROJECT_REPONAME") ?: ""
-    targetCommitish = System.getenv("CIRCLE_SHA1") ?: ""
-    body {
-        return readChangelogString("CHANGELOG.md")
+afterEvaluate {
+    githubRelease {
+        token System.getenv("GITHUB_TOKEN") ?: "InvalidP@ssword"
+        owner System.getenv("CIRCLE_PROJECT_USERNAME") ?: ""
+        repo System.getenv("CIRCLE_PROJECT_REPONAME") ?: ""
+        targetCommitish = System.getenv("CIRCLE_SHA1") ?: ""
+        body {
+            return readChangelogString("CHANGELOG.md")
+        }
+        releaseAssets project(':fabric').tasks.remapJar.archiveFile, project(':neoforge').tasks.remapJar.archiveFile
+        overwrite true
+        tagName = version
+        releaseName = "v${version}"
     }
-    releaseAssets file("fabric/build/libs").listFiles(), file("neoforge/build/libs").listFiles()
-    overwrite true
-    tagName = version
-    releaseName = "v${version}"
 }
