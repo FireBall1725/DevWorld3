@@ -14,9 +14,11 @@ jobs:
       - run:
           name: "Calculate the next version"
           command: |
-            export NEW_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version)
+            FULL_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version)
+            export NEW_VERSION=$(echo $FULL_VERSION | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
             echo $NEW_VERSION > CI_VERSION
-            echo $NEW_VERSION
+            echo "Full version: $FULL_VERSION"
+            echo "Clean version: $NEW_VERSION"
       - persist_to_workspace:
           root: .
           paths:
