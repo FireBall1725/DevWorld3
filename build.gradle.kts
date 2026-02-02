@@ -67,7 +67,8 @@ publishMods {
         github {
             accessToken = System.getenv("GITHUB_TOKEN")
             repository = property("github_repository").toString()
-            commitish = System.getenv("GITHUB_REF") ?: "master"
+            // Use the commit SHA instead of branch/tag ref
+            commitish = System.getenv("GITHUB_SHA") ?: "master"
         }
     }
 }
