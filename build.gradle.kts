@@ -36,7 +36,9 @@ publishMods {
 
     dryRun = System.getenv("PUBLISH_MODS") == null
 
-    // CurseForge
+    // CurseForge - Temporarily disabled due to 500 API errors
+    // TODO: Re-enable when CurseForge API is fixed
+    /*
     if (System.getenv("CURSEFORGE_TOKEN") != null) {
         curseforge {
             accessToken = System.getenv("CURSEFORGE_TOKEN")
@@ -52,8 +54,11 @@ publishMods {
             })
         }
     }
+    */
 
-    // Modrinth
+    // Modrinth - Temporarily disabled due to 401 errors
+    // TODO: Fix Modrinth token permissions
+    /*
     if (System.getenv("MODRINTH_TOKEN") != null) {
         modrinth {
             accessToken = System.getenv("MODRINTH_TOKEN")
@@ -61,6 +66,7 @@ publishMods {
             minecraftVersions.add(minecraftVersion)
         }
     }
+    */
 
     // GitHub Releases
     if (System.getenv("GITHUB_TOKEN") != null) {
