@@ -56,9 +56,7 @@ publishMods {
     }
     */
 
-    // Modrinth - Temporarily disabled due to 401 errors
-    // TODO: Fix Modrinth token permissions
-    /*
+    // Modrinth
     if (System.getenv("MODRINTH_TOKEN") != null) {
         modrinth {
             accessToken = System.getenv("MODRINTH_TOKEN")
@@ -66,7 +64,6 @@ publishMods {
             minecraftVersions.add(minecraftVersion)
         }
     }
-    */
 
     // GitHub Releases
     if (System.getenv("GITHUB_TOKEN") != null) {
