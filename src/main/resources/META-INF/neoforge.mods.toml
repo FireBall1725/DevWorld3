@@ -1,0 +1,20 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "AGPL-3.0-only"
+issueTrackerURL = "https://github.com/FireBall1725/DevWorld3/issues"
+
+[[mods]]
+modId = "${id}"
+displayName = "${name}"
+version = "${version}"
+authors = "${authors}"
+displayURL = "https://github.com/FireBall1725/DevWorld3/wiki"
+description = '''${description}'''
+logoFile = "devworldLogo.png"
+
+[[dependencies.${id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "CLIENT"

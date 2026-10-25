@@ -1,0 +1,51 @@
+mod.id = "devworld"
+mod.name = "DevWorld 3"
+mod.group = "ca.fireball1725.devworld"
+mod.artifact = "DevWorld3"
+mod.version = "26.10.0"
+mod.authors = "FireBall1725"
+mod.description = "One-click creative flat world for testing your mod, with load, delete and regenerate from the title screen."
+
+deps.fabric_loader = "0.16.14"
+deps.fabric_loader_min = "0.14.0"
+loomx.loom_version = "1.18-SNAPSHOT"
+
+["1.19.2"]
+mod.mc_releases = ["1.19.2"]
+mod.pack_format = "9"
+
+[fabric."1.19.2"]
+mod.mc_compat = "1.19.2"
+deps.fabric_api = "0.77.0+1.19.2"
+
+[forge."1.19.2"]
+mod.mc_compat = "[1.19.2]"
+mod.forge_major = "43"
+deps.forge = "1.19.2-43.4.0"
+
+
+["1.20.1"]
+mod.mc_releases = ["1.20.1"]
+mod.pack_format = "15"
+
+[fabric."1.20.1"]
+mod.mc_compat = "1.20.1"
+deps.fabric_api = "0.92.12+1.20.1"
+
+[forge."1.20.1"]
+mod.mc_compat = "[1.20.1]"
+mod.forge_major = "47"
+deps.forge = "1.20.1-47.4.28"
+
+
+["1.21.1"]
+mod.mc_releases = ["1.21", "1.21.1"]
+mod.pack_format = "34"
+
+[fabric."1.21.1"]
+mod.mc_compat = ">=1.21 <=1.21.1"
+deps.fabric_api = "0.116.17+1.21.1"
+
+[neoforge."1.21.1"]
+mod.mc_compat = "[1.21, 1.21.1]"
+deps.neo_loader = "21.1.251"

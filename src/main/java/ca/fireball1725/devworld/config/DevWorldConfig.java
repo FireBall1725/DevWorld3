@@ -1,68 +1,153 @@
 package ca.fireball1725.devworld.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import ca.fireball1725.devworld.DevWorldCommon;
+import ca.fireball1725.devworld.dataclass.ExternalConfig;
+import ca.fireball1725.devworld.dataclass.WorldConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import org.slf4j.Logger;
 
-public class DevWorldConfig {
-    public static ForgeConfigSpec.ConfigValue<String> FLATWORLD_GENERATOR_STRING;
-    public static ForgeConfigSpec.ConfigValue<Boolean> ENABLE_BONUS_CHEST;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Scanner;
 
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_DAYLIGHT;
-    public static ForgeConfigSpec.ConfigValue<Integer> DAYLIGHT_VALUE;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_WEATHER_CYCLE;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_DOFIRETICK;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_MOBGRIEFING;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_DOMOBSPAWNING;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_DISABLE_RAIDS;
-    public static ForgeConfigSpec.ConfigValue<Boolean> RULE_DOINSOMNIA;
-    public static void registerClientConfig(ForgeConfigSpec.Builder CLIENT_BUILDER) {
-        CLIENT_BUILDER.comment("World generation configuration").push("world_config");
+/**
+ * Loads {@code config/devworld.json}. The defaults come from the JSON at the URL in the
+ * {@code DEVWORLD_CONFIG} environment variable when it is set, otherwise from the built-in ones.
+ * Anything in the local file wins over both.
+ */
+public final class DevWorldConfig {
+    private static final Logger LOGGER = DevWorldCommon.LOGGER;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-        FLATWORLD_GENERATOR_STRING = CLIENT_BUILDER
-                .comment("Flat world generator preset")
-                .define("world_generation_preset", Config.EXTERNAL_CONFIG.worldConfig.worldGenerationPreset);
+    private static ExternalConfig config = withDefaults(new ExternalConfig());
+    private static String externalHost;
+    private static boolean externalFailed;
 
-        ENABLE_BONUS_CHEST = CLIENT_BUILDER
-                .comment("Enable the bonus chest")
-                .define("bonus_chest", Config.EXTERNAL_CONFIG.worldConfig.bonusChest);
+    private DevWorldConfig() {}
 
-        CLIENT_BUILDER.pop();
+    public static WorldConfig world() {
+        return config.worldConfig;
     }
 
-    public static void registerGameRuleConfig(ForgeConfigSpec.Builder CLIENT_BUILDER) {
-        CLIENT_BUILDER.comment("Gamerule configuration").push("game_rules");
+    /** Vanilla game rule names mapped to their values. */
+    public static JsonObject gameRules() {
+        return config.gameRules;
+    }
 
-        RULE_DAYLIGHT = CLIENT_BUILDER
-                .comment("Should the daylight cycle be enabled")
-                .define("rule_daylight", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleDayLightCycle);
+    /** The host the external config was loaded from, or null when it was not used or did not load. */
+    public static String externalHost() {
+        return externalHost;
+    }
 
-        DAYLIGHT_VALUE = CLIENT_BUILDER
-                .comment("Default time to lock day / night to")
-                .define("daylight_time", Config.EXTERNAL_CONFIG.gameRulesConfig.daylightTime);
+    /** Whether {@code DEVWORLD_CONFIG} is set but the config could not be loaded from it. */
+    public static boolean externalFailed() {
+        return externalFailed;
+    }
 
-        RULE_WEATHER_CYCLE = CLIENT_BUILDER
-                .comment("Should the weather cycle be enabled")
-                .define("rule_weather_cycle", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleWeatherCycle);
+    /** Loads the config, and writes the file with the effective values if it is missing. */
+    public static void load(Path configDir) {
+        JsonObject merged = loadDefaults();
+        Path file = configDir.resolve("devworld.json");
+        boolean writeBack = true;
 
-        RULE_DOFIRETICK = CLIENT_BUILDER
-                .comment("Should the fire tick be enabled")
-                .define("rule_dofiretick", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleDoFireTick);
+        if (Files.exists(file)) {
+            try {
+                JsonObject local = GSON.fromJson(Files.readString(file), JsonObject.class);
+                LegacyKeys.migrate(local);
+                merge(merged, local);
+            } catch (IOException | JsonParseException ex) {
+                // Leave a hand-edited file that does not parse alone, so it is not overwritten
+                LOGGER.error("Could not read {}; using the defaults", file, ex);
+                writeBack = false;
+            }
+        }
 
-        RULE_MOBGRIEFING = CLIENT_BUILDER
-                .comment("Should mob griefing be enabled")
-                .define("rule_mobgriefing", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleMobGriefing);
+        config = withDefaults(GSON.fromJson(merged, ExternalConfig.class));
 
-        RULE_DOMOBSPAWNING = CLIENT_BUILDER
-                .comment("Should mob spawning be enabled")
-                .define("rule_domobspawning", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleDoMobSpawning);
+        if (writeBack) {
+            try {
+                Files.createDirectories(configDir);
+                String json = GSON.toJson(config);
+                if (!Files.exists(file) || !json.equals(Files.readString(file))) {
+                    Files.writeString(file, json);
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Could not write {}", file, ex);
+            }
+        }
+    }
 
-        RULE_DISABLE_RAIDS = CLIENT_BUILDER
-                .comment("Should the raids be disabled")
-                .define("rule_disable_raids", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleDisableRaids);
+    /** The built-in defaults, with the external config over them when {@code DEVWORLD_CONFIG} is set. */
+    private static JsonObject loadDefaults() {
+        JsonObject defaults = GSON.toJsonTree(withDefaults(new ExternalConfig())).getAsJsonObject();
 
-        RULE_DOINSOMNIA = CLIENT_BUILDER
-                .comment("Should the insomnia be enabled")
-                .define("rule_doinsomnia", Config.EXTERNAL_CONFIG.gameRulesConfig.ruleDoInsomnia);
+        String url = System.getenv("DEVWORLD_CONFIG");
+        if (url == null || url.isBlank()) {
+            return defaults;
+        }
 
-        CLIENT_BUILDER.pop();
+        try {
+            JsonObject external = GSON.fromJson(readStringFromURL(url), JsonObject.class);
+            LegacyKeys.migrate(external);
+            merge(defaults, external);
+            externalHost = URI.create(url).getHost();
+        } catch (IOException | JsonParseException | IllegalArgumentException ex) {
+            LOGGER.error("Could not load the external configuration from {}", url, ex);
+            externalFailed = true;
+        }
+        return defaults;
+    }
+
+    /** Copies every key of {@code over} into {@code base}, going into nested objects. */
+    private static void merge(JsonObject base, JsonObject over) {
+        if (over == null) {
+            return;
+        }
+        for (var entry : over.entrySet()) {
+            JsonElement existing = base.get(entry.getKey());
+            if (existing != null && existing.isJsonObject() && entry.getValue().isJsonObject()) {
+                merge(existing.getAsJsonObject(), entry.getValue().getAsJsonObject());
+            } else {
+                base.add(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    private static String readStringFromURL(String requestURL) throws IOException {
+        try (Scanner scanner = new Scanner(new URL(requestURL).openStream(), StandardCharsets.UTF_8)) {
+            scanner.useDelimiter("\\A");
+            return scanner.hasNext() ? scanner.next() : "";
+        }
+    }
+
+    private static JsonObject defaultGameRules() {
+        JsonObject rules = new JsonObject();
+        rules.addProperty("doDaylightCycle", false);
+        rules.addProperty("doWeatherCycle", false);
+        rules.addProperty("doFireTick", false);
+        rules.addProperty("mobGriefing", false);
+        rules.addProperty("doMobSpawning", true);
+        rules.addProperty("disableRaids", true);
+        rules.addProperty("doInsomnia", false);
+        return rules;
+    }
+
+    private static ExternalConfig withDefaults(ExternalConfig loaded) {
+        ExternalConfig result = loaded == null ? new ExternalConfig() : loaded;
+        if (result.gameRules == null) {
+            result.gameRules = defaultGameRules();
+        }
+        if (result.worldConfig == null) {
+            result.worldConfig = new WorldConfig();
+        }
+        return result;
     }
 }

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "${description}",
+  "authors": [
+    "${authors}"
+  ],
+  "contact": {
+    "homepage": "https://github.com/FireBall1725/DevWorld3/wiki",
+    "issues": "https://github.com/FireBall1725/DevWorld3/issues"
+  },
+  "license": "AGPL-3.0-only",
+  "icon": "devworldLogo.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ca.fireball1725.devworld.DevWorld3Fabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}",
+    "fabric-lifecycle-events-v1": "*",
+    "fabric-resource-loader-v0": "*",
+    "fabric-screen-api-v1": "*"
+  }
+}
