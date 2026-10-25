@@ -1,0 +1,82 @@
+name: Publish
+
+# A v* tag publishes for real. Run it by hand to dry-run: nothing is uploaded unless dry_run is turned off.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Print what would be uploaded, and upload nothing
+        type: boolean
+        default: true
+
+env:
+  UPLOAD: ${{ github.event_name == 'push' || inputs.dry_run == false }}
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [1.19.2-fabric, 1.19.2-forge, 1.20.1-fabric, 1.20.1-forge, 1.21.1-fabric, 1.21.1-neoforge]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: The tag matches mod.version
+        if: github.event_name == 'push'
+        run: |
+          mod=$(sed -n 's/^mod.version = "\(.*\)"/\1/p' stonecutter.properties.toml)
+          if [ "v$mod" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match mod.version $mod in stonecutter.properties.toml"
+            exit 1
+          fi
+      - name: The upload tokens are set
+        if: env.UPLOAD == 'true'
+        env:
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          [ -n "$CURSEFORGE_TOKEN" ] || { echo "CURSEFORGE_TOKEN is not set"; exit 1; }
+          [ -n "$MODRINTH_TOKEN" ] || { echo "MODRINTH_TOKEN is not set"; exit 1; }
+      - name: Build and test
+        run: ./gradlew :${{ matrix.node }}:build -x checkstyleMain -x checkstyleTest
+      - name: Publish to CurseForge and Modrinth
+        env:
+          PUBLISH_MODS: ${{ env.UPLOAD }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: ./gradlew :${{ matrix.node }}:publishMods
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DevWorld3-${{ matrix.node }}
+          path: |
+            versions/${{ matrix.node }}/build/libs/*.jar
+            !versions/${{ matrix.node }}/build/libs/*-sources.jar
+          if-no-files-found: error
+
+  # One release with all six jars, from a tag only
+  release:
+    needs: publish
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: DevWorld3-*
+          merge-multiple: true
+          path: jars
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: jars/*.jar
+          generate_release_notes: true

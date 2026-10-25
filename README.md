@@ -18,7 +18,29 @@ Fabric needs Fabric API. Versions look like `26.10.0` (year, month, revision).
 
 ## Usage
 
-Add the jar to your dev run only. Releases are on the [releases page](https://github.com/FireBall1725/DevWorld3/releases).
+Add the jar to your dev run only. Releases are on the [releases page](https://github.com/FireBall1725/DevWorld3/releases), and the jars are also on Modrinth and CurseForge.
+
+To pull it into a Gradle project, add Jared's maven and depend on the jar for your loader and version:
+
+```groovy
+repositories {
+    maven {
+        name = "Blame Jared"
+        url = "https://maven.blamejared.com"
+    }
+}
+
+dependencies {
+    // Fabric (Loom)
+    modLocalRuntime "ca.fireball1725.devworld:DevWorld3-fabric-1.21.1:26.10.0"
+    // NeoForge (ModDevGradle)
+    runtimeOnly "ca.fireball1725.devworld:DevWorld3-neoforge-1.21.1:26.10.0"
+    // Forge (ForgeGradle)
+    runtimeOnly fg.deobf("ca.fireball1725.devworld:DevWorld3-forge-1.20.1:26.10.0")
+}
+```
+
+The artifact is `DevWorld3-{platform}-{mcVersion}` and the version is the mod version.
 
 ## Configuration
 
@@ -65,7 +87,7 @@ Gradle needs JDK 25 (Loom 1.18). The game itself builds against Java 17 or 21 de
 ./gradlew buildAndCollect
 ```
 
-Jars land in `build/libs/{version}/`. The project uses Stonecutter, so a new Minecraft version is one `match(...)` line in `settings.gradle.kts` and a block in `stonecutter.properties.toml`. Run `"Set active project to <node>"` to switch which version your IDE sees.
+Jars land in `build/libs/{version}/`. `./gradlew publish` writes the Maven artifacts to the folder in the `local_maven` environment variable, and `./gradlew publishMods` is a dry run until `PUBLISH_MODS=true` is set. The project uses Stonecutter, so a new Minecraft version is one `match(...)` line in `settings.gradle.kts` and a block in `stonecutter.properties.toml`. Run `"Set active project to <node>"` to switch which version your IDE sees.
 
 ## License
 

@@ -2,10 +2,16 @@ plugins {
     id("net.neoforged.moddev") version "2.0.147"
     id("neoforge-mutex")
     id("devworld-quality")
+    id("devworld-publish")
 }
 
 version = property("mod.version") as String
 base.archivesName = "${property("mod.artifact") as String}-neoforge-${sc.current.version}"
+
+
+// The Minecraft versions this jar runs on, for the CurseForge and Modrinth listings
+val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
+    ?.asList().orEmpty().map { it.toString() }
 
 val requiredJava = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -53,6 +59,11 @@ java {
         vendor = JvmVendorSpec.ADOPTIUM
         languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
     }
+}
+
+devworldPublish {
+    jar.set(tasks.jar.flatMap { it.archiveFile })
+    minecraftVersions.addAll(compatibleVersions)
 }
 
 tasks {

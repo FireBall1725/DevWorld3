@@ -2,7 +2,9 @@ plugins {
     // This plugin applies the correct loom variant based on the Minecraft version
     id("dev.kikugie.loom-back-compat")
     id("devworld-quality")
+    id("devworld-publish")
 }
+
 
 // DO NOT set group = ...!
 version = property("mod.version") as String
@@ -61,6 +63,12 @@ java {
         vendor = JvmVendorSpec.ADOPTIUM
         languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
     }
+}
+
+devworldPublish {
+    jar.set(loomx.modJar.flatMap { it.archiveFile })
+    minecraftVersions.addAll(compatibleVersions)
+    requiresFabricApi = true
 }
 
 tasks {

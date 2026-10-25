@@ -2,6 +2,7 @@ plugins {
     id("net.neoforged.moddev.legacyforge") version "2.0.147"
     id("neoforge-mutex")
     id("devworld-quality")
+    id("devworld-publish")
 }
 
 version = property("mod.version") as String
@@ -9,6 +10,11 @@ base.archivesName = "${property("mod.artifact") as String}-forge-${sc.current.ve
 
 val modId = property("mod.id") as String
 val runDir = rootProject.file("run/${project.name}")
+
+
+// The Minecraft versions this jar runs on, for the CurseForge and Modrinth listings
+val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
+    ?.asList().orEmpty().map { it.toString() }
 
 val requiredJava = when {
     sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
@@ -53,6 +59,11 @@ java {
         vendor = JvmVendorSpec.ADOPTIUM
         languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
     }
+}
+
+devworldPublish {
+    jar.fileProvider(tasks.named("reobfJar").map { it.outputs.files.singleFile })
+    minecraftVersions.addAll(compatibleVersions)
 }
 
 tasks {
