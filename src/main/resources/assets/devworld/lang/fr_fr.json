@@ -5,5 +5,8 @@
 
   "devworld.title": "Le monde des dév 3",
 
-  "devworld.hover.delete": "Appuyez deux fois sur [MAJUSCULE GAUCHE] pour activer la suppression."
+  "devworld.hover.delete": "Appuyez deux fois sur [MAJUSCULE GAUCHE] pour activer la suppression.",
+
+  "devworld.config.external": "Dev World: config externe chargée (%s)",
+  "devworld.config.external_failed": "Dev World: échec du chargement de la config externe, voir le journal"
 }

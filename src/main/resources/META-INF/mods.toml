@@ -1,30 +1,27 @@
-modLoader="javafml"
-loaderVersion="[41,)"
-license="AGPL License"
-issueTrackerURL="https://github.com/FireBall1725/DevWorld3/issues"
+modLoader = "javafml"
+loaderVersion = "[${forge_major},)"
+license = "AGPL-3.0-only"
+issueTrackerURL = "https://github.com/FireBall1725/DevWorld3/issues"
 
 [[mods]]
-modId="devworld"
-version="${version}"
-displayName="DevWorld 3"
-logoFile="devworldLogo.png"
-authors="FireBall1725"
-displayURL="https://github.com/FireBall1725/DevWorld3/wiki"
-credits="Special thanks to Jared for hosting the mod on their maven"
-description='''
-DevWorld 3 is a Minecraft Forge Mod that is designed to be an easy way to create a developer test world, this test world can be then used to test your development mod in. With one click you get a creative flat world that by default is set to the redstone ready preset, time set to noon and is frozen, and weather disabled. From the title screen you can also quickly load, delete and regenerate the DevWorld.
-'''
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+logoFile = "devworldLogo.png"
+authors = "${authors}"
+displayURL = "https://github.com/FireBall1725/DevWorld3/wiki"
+description = '''${description}'''
 
-[[dependencies.devworld]]
-    modId="forge"
-    mandatory=true
-    versionRange="[41,)"
-    ordering="NONE"
-    side="BOTH"
+[[dependencies.${id}]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_major},)"
+ordering = "NONE"
+side = "CLIENT"
 
-[[dependencies.devworld]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.19,1.22)"
-    ordering="NONE"
-    side="BOTH"
+[[dependencies.${id}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "CLIENT"
