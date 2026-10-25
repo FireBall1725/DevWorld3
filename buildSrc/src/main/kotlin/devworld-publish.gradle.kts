@@ -51,6 +51,9 @@ afterEvaluate {
             projectId = property("mod.curse_project_id") as String
             accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").orElse("dry-run")
             minecraftVersions.addAll(devworld.minecraftVersions)
+            // CurseForge rejects an upload with no environment: this is a client-side dev tool
+            clientRequired = true
+            serverRequired = false
             if (devworld.requiresFabricApi.getOrElse(false)) {
                 requires("fabric-api")
             }
