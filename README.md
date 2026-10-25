@@ -13,6 +13,9 @@ One jar per loader and Minecraft version, named `DevWorld3-{platform}-{mcVersion
 | 1.19.2    | yes    | yes   |          |
 | 1.20.1    | yes    | yes   |          |
 | 1.21.1    | yes    |       | yes      |
+| 26.1      | yes    |       | yes      |
+| 26.2      | yes    |       | yes      |
+| 26.3      | yes    |       | yes      |
 
 Fabric needs Fabric API. Versions look like `26.10.0` (year, month, revision).
 
@@ -71,7 +74,7 @@ The first launch writes `config/devworld.json`. Every key is optional; anything 
 }
 ```
 
-`game_rules` takes any vanilla game rule by its in-game name, including rules added by other mods. Unknown names and wrong value types are logged and skipped. `time_of_day` is applied when the world opens, only for the DevWorld and only while `doDaylightCycle` is off.
+`game_rules` takes any vanilla game rule by its in-game name, including rules added by other mods. On 26.1 and up the rules were renamed (`doDaylightCycle` is `advance_time`, and `disableRaids` became `raids`, which means the opposite), so the names above are translated for you; the new names work too. Unknown names and wrong value types are logged and skipped. `time_of_day` is applied when the world opens, only for the DevWorld and only while `doDaylightCycle` is off.
 
 The old `rule_daylight` style keys and `daylight_time` are still read and get rewritten to the new names.
 

@@ -10,8 +10,10 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
-//? if >=1.20
+//? if >=1.20 && <26.1
 import net.minecraft.client.gui.GuiGraphics;
+//? if >=26.1
+//import net.minecraft.client.gui.GuiGraphicsExtractor;
 //? if <1.20
 //import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -106,14 +108,37 @@ public final class DevWorldTitleScreen {
     }
 
     private static int externalConfigColor() {
-        return DevWorldConfig.externalFailed() ? 0xFF5555 : 0x55FF55;
+        return DevWorldConfig.externalFailed() ? 0xFFFF5555 : 0xFF55FF55;
     }
 
     private static boolean showDeleteHint() {
         return buttonDelete.isHoveredOrFocused() && buttonDelete.visible && !buttonDelete.active;
     }
 
-    //? if >=1.20 {
+    //? if >=26.1 {
+    /*/^* Called at the end of the title screen render; draws the mod name and the delete hint. ^/
+    public static void render(TitleScreen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (buttonCreate == null) {
+            return;
+        }
+        updateVisibility();
+
+        graphics.centeredText(Minecraft.getInstance().font, Component.translatable("devworld.title"),
+                titleX(screen), titleY(screen), 0xFFFFFFFF);
+
+        Component external = externalConfigLine();
+        if (external != null) {
+            graphics.text(Minecraft.getInstance().font, external, EXTERNAL_CONFIG_X, EXTERNAL_CONFIG_Y,
+                    externalConfigColor());
+        }
+
+        if (showDeleteHint()) {
+            graphics.setTooltipForNextFrame(Minecraft.getInstance().font,
+                    Component.translatable("devworld.hover.delete"), mouseX, mouseY);
+        }
+    }
+    *///?}
+    //? if >=1.20 && <26.1 {
     /** Called at the end of the title screen render; draws the mod name and the delete hint. */
     public static void render(TitleScreen screen, GuiGraphics graphics, int mouseX, int mouseY) {
         if (buttonCreate == null) {
@@ -122,7 +147,7 @@ public final class DevWorldTitleScreen {
         updateVisibility();
 
         graphics.drawCenteredString(Minecraft.getInstance().font, Component.translatable("devworld.title"),
-                titleX(screen), titleY(screen), 0xFFFFFF);
+                titleX(screen), titleY(screen), 0xFFFFFFFF);
 
         Component external = externalConfigLine();
         if (external != null) {
@@ -144,7 +169,7 @@ public final class DevWorldTitleScreen {
         updateVisibility();
 
         net.minecraft.client.gui.GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font,
-                Component.translatable("devworld.title"), titleX(screen), titleY(screen), 0xFFFFFF);
+                Component.translatable("devworld.title"), titleX(screen), titleY(screen), 0xFFFFFFFF);
 
         Component external = externalConfigLine();
         if (external != null) {

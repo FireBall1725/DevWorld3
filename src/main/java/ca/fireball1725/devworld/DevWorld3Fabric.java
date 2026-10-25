@@ -18,12 +18,25 @@ public class DevWorld3Fabric implements ClientModInitializer {
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof TitleScreen title) {
+                //? if <26.1
                 DevWorldTitleScreen.init(title, Screens.getButtons(screen)::add);
+                //? if >=26.1
+                //DevWorldTitleScreen.init(title, Screens.getWidgets(screen)::add);
+
+                //? if >=26.1 {
+                /*ScreenKeyboardEvents.afterKeyPress(screen)
+                        .register((s, event) -> DevWorldTitleScreen.keyPressed(event.key()));
+                ScreenEvents.afterExtract(screen)
+                        .register((s, graphics, mouseX, mouseY, tickDelta) ->
+                                DevWorldTitleScreen.render(title, graphics, mouseX, mouseY));
+                *///?}
+                //? if <26.1 {
                 ScreenKeyboardEvents.afterKeyPress(screen)
                         .register((s, key, scancode, modifiers) -> DevWorldTitleScreen.keyPressed(key));
                 ScreenEvents.afterRender(screen)
                         .register((s, graphics, mouseX, mouseY, tickDelta) ->
                                 DevWorldTitleScreen.render(title, graphics, mouseX, mouseY));
+                //?}
             }
         });
 

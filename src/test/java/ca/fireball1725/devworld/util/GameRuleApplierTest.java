@@ -1,5 +1,6 @@
 package ca.fireball1725.devworld.util;
 
+//? if <26.1 {
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.world.level.GameRules;
@@ -44,3 +45,4 @@ class GameRuleApplierTest {
         assertTrue(rules.getBoolean(GameRules.RULE_KEEPINVENTORY));
     }
 }
+//?}

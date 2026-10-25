@@ -6,7 +6,7 @@ plugins {
 }
 
 version = property("mod.version") as String
-base.archivesName = "${property("mod.artifact") as String}-forge-${sc.current.version}"
+base.archivesName = "${property("mod.artifact") as String}-forge-${project.name.substringBefore('-')}"
 
 val modId = property("mod.id") as String
 val runDir = rootProject.file("run/${project.name}")
@@ -79,7 +79,7 @@ tasks {
             register("version", sc.properties["mod.version"])
             register("minecraft", sc.properties["mod.mc_compat"])
             register("authors", sc.properties["mod.authors"])
-            register("pack_format", sc.properties["mod.pack_format"])
+            register("pack_fields", sc.properties["mod.pack_fields"])
             register("forge_major", sc.properties["mod.forge_major"])
             register("description", sc.properties["mod.description"])
         }

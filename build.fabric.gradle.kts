@@ -8,7 +8,7 @@ plugins {
 
 // DO NOT set group = ...!
 version = property("mod.version") as String
-base.archivesName = "${property("mod.artifact") as String}-fabric-${sc.current.version}"
+base.archivesName = "${property("mod.artifact") as String}-fabric-${project.name.substringBefore('-')}"
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -84,7 +84,7 @@ tasks {
             register("version", sc.properties["mod.version"])
             register("minecraft", sc.properties["mod.mc_compat"])
             register("authors", sc.properties["mod.authors"])
-            register("pack_format", sc.properties["mod.pack_format"])
+            register("pack_fields", sc.properties["mod.pack_fields"])
             register("description", sc.properties["mod.description"])
             register("loader", sc.properties.get<String>("deps.fabric_loader_min"))
         }

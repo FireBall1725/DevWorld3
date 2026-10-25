@@ -7,10 +7,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.PresetFlatWorldScreen;
 import net.minecraft.client.gui.screens.Screen;
+//? if <26.1
 import net.minecraft.core.RegistryAccess;
+//? if >=26.1
+//import net.minecraft.core.HolderLookup;
 //? if <1.21
 //import net.minecraft.network.chat.Component;
 import net.minecraft.world.Difficulty;
+//? if <26.1
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
@@ -59,7 +63,7 @@ public class DevWorldUtils {
     /** Creates a new dev world from the config and opens it. */
     public void createDevWorld() {
         Minecraft mc = minecraft();
-        Screen previous = mc.screen;
+        Screen previous = Compat.currentScreen(mc);
         LevelSettings levelSettings = createLevelSettings();
         WorldConfig world = DevWorldConfig.world();
         String preset = world.worldGenerationPreset;
@@ -67,6 +71,10 @@ public class DevWorldUtils {
         // 1.21 shows its own loading screen
         //? if <1.21
         //mc.forceSetScreen(new GenericDirtMessageScreen(Component.translatable("createWorld.preparing")));
+
+        // The game rules can't go in the 26.x level settings; they are set when the new world's server starts
+        //? if >=26.1
+        //DevWorldCommon.applyRulesOnStart = true;
 
         //? if >=1.20 {
         WorldOptions options = new WorldOptions(world.seed, world.generateStructures, world.bonusChest);
@@ -88,7 +96,12 @@ public class DevWorldUtils {
 
     //? if >=1.20 {
     /** The normal dimensions with the overworld swapped for a flat world built from the preset string. */
-    private static WorldDimensions flatDimensions(RegistryAccess access, String preset) {
+    private static WorldDimensions flatDimensions(
+            //? if <26.1
+            RegistryAccess access,
+            //? if >=26.1
+            //HolderLookup.Provider access,
+            String preset) {
         HolderGetter<Block> blocks = access.lookupOrThrow(Registries.BLOCK);
         HolderGetter<Biome> biomes = access.lookupOrThrow(Registries.BIOME);
         HolderGetter<StructureSet> structureSets = access.lookupOrThrow(Registries.STRUCTURE_SET);
@@ -119,17 +132,27 @@ public class DevWorldUtils {
     *///?}
 
     private LevelSettings createLevelSettings() {
-        GameRules gameRules = new GameRules();
-        GameRuleApplier.apply(gameRules, DevWorldConfig.gameRules());
-
         //? if >=1.20
         WorldDataConfiguration dataConfiguration = WorldDataConfiguration.DEFAULT;
         //? if <1.20
         //DataPackConfig dataConfiguration = DataPackConfig.DEFAULT;
 
         WorldConfig world = DevWorldConfig.world();
-        return new LevelSettings(worldName(), GameType.byName(world.gameMode, GameType.CREATIVE), false,
-                Difficulty.byName(world.difficulty), world.allowCommands, gameRules, dataConfiguration);
+        GameType gameType = GameType.byName(world.gameMode, GameType.CREATIVE);
+        Difficulty difficulty = Difficulty.byName(world.difficulty);
+
+        //? if >=26.1 {
+        /*LevelSettings.DifficultySettings difficultySettings =
+                new LevelSettings.DifficultySettings(difficulty, false, false);
+        return new LevelSettings(worldName(), gameType, difficultySettings, world.allowCommands, dataConfiguration);
+        *///?}
+        //? if <26.1 {
+        GameRules gameRules = new GameRules();
+        GameRuleApplier.apply(gameRules, DevWorldConfig.gameRules());
+
+        return new LevelSettings(worldName(), gameType, false, difficulty, world.allowCommands, gameRules,
+                dataConfiguration);
+        //?}
     }
 
     /** Whether there is a dev world save. */
@@ -141,8 +164,8 @@ public class DevWorldUtils {
     public void loadDevWorld() {
         Minecraft mc = minecraft();
         //? if >=1.21 {
-        Screen previous = mc.screen;
-        mc.createWorldOpenFlows().openWorld(worldName(), () -> mc.setScreen(previous));
+        Screen previous = Compat.currentScreen(mc);
+        mc.createWorldOpenFlows().openWorld(worldName(), () -> Compat.setScreen(mc, previous));
         //?}
         //? if <1.21
         //mc.createWorldOpenFlows().loadLevel(mc.screen, worldName());

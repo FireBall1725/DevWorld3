@@ -20,7 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [1.19.2-fabric, 1.19.2-forge, 1.20.1-fabric, 1.20.1-forge, 1.21.1-fabric, 1.21.1-neoforge]
+        node: [1.19.2-fabric, 1.19.2-forge, 1.20.1-fabric, 1.20.1-forge, 1.21.1-fabric, 1.21.1-neoforge,
+               26.1-fabric, 26.1-neoforge, 26.2-fabric, 26.2-neoforge, 26.3-fabric, 26.3-neoforge]
     steps:
       - uses: actions/checkout@v4
       # Gradle runs on 25 for Loom 1.18; the 17 and 21 toolchains for the game are fetched on demand

@@ -23,6 +23,9 @@ public class DevWorld3NeoForge {
         });
         NeoForge.EVENT_BUS.addListener((ScreenEvent.KeyPressed.Post event) -> {
             if (event.getScreen() instanceof TitleScreen) {
+                //? if >=26.3
+                //DevWorldTitleScreen.keyPressed(event.getKey());
+                //? if <26.3
                 DevWorldTitleScreen.keyPressed(event.getKeyCode());
             }
         });

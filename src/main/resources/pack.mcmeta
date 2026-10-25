@@ -1,6 +1,6 @@
 {
   "pack": {
     "description": "DevWorld 3 resources",
-    "pack_format": ${pack_format}
+    ${pack_fields}
   }
 }

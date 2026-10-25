@@ -10,7 +10,7 @@ version = "${version}"
 authors = "${authors}"
 displayURL = "https://github.com/FireBall1725/DevWorld3/wiki"
 description = '''${description}'''
-logoFile = "devworldLogo.png"
+${logo_key} = "devworldLogo.png"
 
 [[dependencies.${id}]]
 modId = "minecraft"

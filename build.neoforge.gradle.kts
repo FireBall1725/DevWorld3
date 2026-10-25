@@ -6,7 +6,7 @@ plugins {
 }
 
 version = property("mod.version") as String
-base.archivesName = "${property("mod.artifact") as String}-neoforge-${sc.current.version}"
+base.archivesName = "${property("mod.artifact") as String}-neoforge-${project.name.substringBefore('-')}"
 
 
 // The Minecraft versions this jar runs on, for the CurseForge and Modrinth listings
@@ -79,7 +79,9 @@ tasks {
             register("version", sc.properties["mod.version"])
             register("minecraft", sc.properties["mod.mc_compat"])
             register("authors", sc.properties["mod.authors"])
-            register("pack_format", sc.properties["mod.pack_format"])
+            register("pack_fields", sc.properties["mod.pack_fields"])
+            // NeoForge 26.2 warns on startup about the old key
+            register("logo_key", if (sc.current.parsed >= "26.2") "iconFile" else "logoFile")
             register("description", sc.properties["mod.description"])
         }
 
