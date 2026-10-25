@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,7 +53,14 @@ public final class DevWorldConfig {
 
     /** Loads the config, and writes the file with the effective values if it is missing. */
     public static void load(Path configDir) {
-        JsonObject merged = loadDefaults();
+        load(configDir, System.getenv("DEVWORLD_CONFIG"));
+    }
+
+    /** As {@link #load(Path)}, with the external config URL passed in instead of read from the environment. */
+    static void load(Path configDir, String externalUrl) {
+        externalHost = null;
+        externalFailed = false;
+        JsonObject merged = loadDefaults(externalUrl);
         Path file = configDir.resolve("devworld.json");
         boolean writeBack = true;
 
@@ -86,10 +92,9 @@ public final class DevWorldConfig {
     }
 
     /** The built-in defaults, with the external config over them when {@code DEVWORLD_CONFIG} is set. */
-    private static JsonObject loadDefaults() {
+    private static JsonObject loadDefaults(String url) {
         JsonObject defaults = GSON.toJsonTree(withDefaults(new ExternalConfig())).getAsJsonObject();
 
-        String url = System.getenv("DEVWORLD_CONFIG");
         if (url == null || url.isBlank()) {
             return defaults;
         }
@@ -98,7 +103,8 @@ public final class DevWorldConfig {
             JsonObject external = GSON.fromJson(readStringFromURL(url), JsonObject.class);
             LegacyKeys.migrate(external);
             merge(defaults, external);
-            externalHost = URI.create(url).getHost();
+            String host = URI.create(url).getHost();
+            externalHost = host == null || host.isEmpty() ? url : host;
         } catch (IOException | JsonParseException | IllegalArgumentException ex) {
             LOGGER.error("Could not load the external configuration from {}", url, ex);
             externalFailed = true;
@@ -122,7 +128,7 @@ public final class DevWorldConfig {
     }
 
     private static String readStringFromURL(String requestURL) throws IOException {
-        try (Scanner scanner = new Scanner(new URL(requestURL).openStream(), StandardCharsets.UTF_8)) {
+        try (Scanner scanner = new Scanner(URI.create(requestURL).toURL().openStream(), StandardCharsets.UTF_8)) {
             scanner.useDelimiter("\\A");
             return scanner.hasNext() ? scanner.next() : "";
         }

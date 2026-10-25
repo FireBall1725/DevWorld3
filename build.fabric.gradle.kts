@@ -1,6 +1,7 @@
 plugins {
     // This plugin applies the correct loom variant based on the Minecraft version
     id("dev.kikugie.loom-back-compat")
+    id("devworld-quality")
 }
 
 // DO NOT set group = ...!

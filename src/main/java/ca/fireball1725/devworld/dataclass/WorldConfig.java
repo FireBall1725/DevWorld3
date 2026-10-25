@@ -7,7 +7,8 @@ public class WorldConfig {
     public String worldName = "DevWorld";
 
     @SerializedName("world_generation_preset")
-    public String worldGenerationPreset = "minecraft:bedrock,3*minecraft:stone,116*minecraft:sandstone;minecraft:desert";
+    public String worldGenerationPreset =
+            "minecraft:bedrock,3*minecraft:stone,116*minecraft:sandstone;minecraft:desert";
 
     @SerializedName("bonus_chest")
     public Boolean bonusChest = false;

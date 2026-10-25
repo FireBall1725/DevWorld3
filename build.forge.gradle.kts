@@ -1,6 +1,7 @@
 plugins {
     id("net.neoforged.moddev.legacyforge") version "2.0.147"
     id("neoforge-mutex")
+    id("devworld-quality")
 }
 
 version = property("mod.version") as String
@@ -29,6 +30,12 @@ legacyForge {
             client()
         }
     }
+}
+
+// The legacy plugin has no unit test support; give the tests the same Minecraft classpath as the main code
+sourceSets.test {
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath
 }
 
 java {

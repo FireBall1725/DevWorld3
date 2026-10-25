@@ -1,0 +1,21 @@
+{
+  "Exclude": [
+    "^gradle/wrapper/",
+    "^gradlew",
+    "^versions/.*/build/",
+    "^build/",
+    "^run/",
+    "\\.(png|jpg|jpeg|gif|ico|pdf|jar)$"
+  ],
+  "Verbose": false,
+  "IgnoreDefaults": false,
+  "SpacesAfterTabs": false,
+  "_comment_indentation": "Indentation is off because the checker's rule is 'left padding must be a multiple of indent_size', which fires on any aligned continuation line. Checkstyle gates the Java; .editorconfig still declares the indent for editors.",
+  "Disable": {
+    "EndOfLine": false,
+    "Indentation": true,
+    "InsertFinalNewline": false,
+    "TrimTrailingWhitespace": false,
+    "MaxLineLength": true
+  }
+}

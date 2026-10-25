@@ -8,7 +8,8 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.PresetFlatWorldScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.chat.Component;
+//? if <1.21
+//import net.minecraft.network.chat.Component;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -41,6 +42,7 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 //import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 
 import java.io.IOException;
+//? if >=1.20
 import java.util.List;
 import java.util.Optional;
 

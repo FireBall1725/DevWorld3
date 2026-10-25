@@ -1,6 +1,7 @@
 plugins {
     id("net.neoforged.moddev") version "2.0.147"
     id("neoforge-mutex")
+    id("devworld-quality")
 }
 
 version = property("mod.version") as String
@@ -23,6 +24,11 @@ neoForge {
         register(property("mod.id") as String) {
             sourceSet(sourceSets.main.get())
         }
+    }
+
+    unitTest {
+        enable()
+        testedMod = mods.getByName(property("mod.id") as String)
     }
 
     runs {

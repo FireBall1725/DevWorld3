@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The job name is "build (<node>)", which is what the branch protection checks are called
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [1.19.2-fabric, 1.19.2-forge, 1.20.1-fabric, 1.20.1-forge, 1.21.1-fabric, 1.21.1-neoforge]
+    steps:
+      - uses: actions/checkout@v4
+      # Gradle runs on 25 for Loom 1.18; the 17 and 21 toolchains for the game are fetched on demand
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      - name: Build and test
+        run: ./gradlew :${{ matrix.node }}:build -x checkstyleMain -x checkstyleTest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DevWorld3-${{ matrix.node }}
+          path: |
+            versions/${{ matrix.node }}/build/libs/*.jar
+            !versions/${{ matrix.node }}/build/libs/*-sources.jar
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-reports-${{ matrix.node }}
+          path: versions/${{ matrix.node }}/build/reports/tests/
+          if-no-files-found: ignore
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      - name: Checkstyle on every node
+        run: ./gradlew checkstyleMain checkstyleTest
+      - uses: editorconfig-checker/action-editorconfig-checker@main
+      - run: editorconfig-checker

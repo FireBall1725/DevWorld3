@@ -91,3 +91,7 @@ insert_final_newline = unset
 [LICENSE]
 indent_style = unset
 indent_size = unset
+
+# The Java here is four-space, as it was before the port
+[*.java]
+indent_size = 4
