@@ -49,3 +49,6 @@ forge*changelog.txt
 
 # mac
 .ds_store
+
+# Game logs from the unit test runs
+versions/*/logs/

@@ -1,36 +1,97 @@
 # DevWorld3
-DevWorld 3 is a Minecraft Forge Mod that is designed to be an easy way to create a developer test world, this test world can be then used to test your development mod in. With one click you get a creative flat world that by default is set to the redstone ready preset, time set to noon and is frozen, and weather disabled. From the title screen you can also quickly load, delete and regenerate the DevWorld.
+
+DevWorld 3 puts three buttons on the title screen: New World, Load World and Delete World. New World makes a creative flat world with the daylight cycle, weather and mob griefing off, so you can start testing your own mod right away. Delete World stays greyed out until you press left shift twice.
+
+It is meant to sit in your dev environment, not in a modpack.
+
+## Versions
+
+One jar per loader and Minecraft version, named `DevWorld3-{platform}-{mcVersion}-{version}`.
+
+| Minecraft | Fabric | Forge | NeoForge |
+|-----------|--------|-------|----------|
+| 1.19.2    | yes    | yes   |          |
+| 1.20.1    | yes    | yes   |          |
+| 1.21.1    | yes    |       | yes      |
+| 26.1      | yes    |       | yes      |
+| 26.2      | yes    |       | yes      |
+| 26.3      | yes    |       | yes      |
+
+Fabric needs Fabric API. Versions look like `26.10.0` (year, month, revision).
 
 ## Usage
-Like all minecraft mods, this mod can be installed by dropping it into the mods folder, however this mod was not designed to be used this way, or included in packs. This mod was designed to be included into your gradle environment so you can use it while debugging the mod that you are developing.
 
-To use this mod with gradle, make the following changes to your `build.gradle` file:
+Add the jar to your dev run only. Releases are on the [releases page](https://github.com/FireBall1725/DevWorld3/releases), and the jars are also on Modrinth and CurseForge.
 
-In the `repositories { }` section add the following:
-```java
+To pull it into a Gradle project, add Jared's maven and depend on the jar for your loader and version:
+
+```groovy
 repositories {
     maven {
-        name "Blame Jared"
-        url "https://maven.blamejared.com"
+        name = "Blame Jared"
+        url = "https://maven.blamejared.com"
     }
 }
-```
 
-In the `dependencies { }` section add the following:
-```java
 dependencies {
-    runtimeOnly fg.deobf("ca.fireball1725.devworld:DevWorld3-1.19.2:X.Y.Z:client")
+    // Fabric (Loom)
+    modLocalRuntime "ca.fireball1725.devworld:DevWorld3-fabric-1.21.1:26.10.0"
+    // NeoForge (ModDevGradle)
+    runtimeOnly "ca.fireball1725.devworld:DevWorld3-neoforge-1.21.1:26.10.0"
+    // Forge (ForgeGradle)
+    runtimeOnly fg.deobf("ca.fireball1725.devworld:DevWorld3-forge-1.20.1:26.10.0")
 }
 ```
 
-**Note:** Replace `X.Y.Z` with the release version of the mod which can be found [here](https://github.com/FireBall1725/DevWorld3/releases)
+The artifact is `DevWorld3-{platform}-{mcVersion}` and the version is the mod version.
 
-Example: `v0.0.5` would be `ca.fireball1725.devworld:DevWorld3-1.19.2:0.0.5:client`
 ## Configuration
-For configuration see the [wiki](https://github.com/FireBall1725/DevWorld3/wiki/Configuration)
+
+The first launch writes `config/devworld.json`. Every key is optional; anything you leave out keeps its default.
+
+```json
+{
+  "world_config": {
+    "world_name": "DevWorld",
+    "world_generation_preset": "minecraft:bedrock,3*minecraft:stone,116*minecraft:sandstone;minecraft:desert",
+    "bonus_chest": false,
+    "game_mode": "creative",
+    "difficulty": "normal",
+    "seed": 0,
+    "generate_structures": false,
+    "allow_commands": true,
+    "time_of_day": 6000
+  },
+  "game_rules": {
+    "doDaylightCycle": false,
+    "doWeatherCycle": false,
+    "doFireTick": false,
+    "mobGriefing": false,
+    "doMobSpawning": true,
+    "disableRaids": true,
+    "doInsomnia": false
+  }
+}
+```
+
+`game_rules` takes any vanilla game rule by its in-game name, including rules added by other mods. On 26.1 and up the rules were renamed (`doDaylightCycle` is `advance_time`, and `disableRaids` became `raids`, which means the opposite), so the names above are translated for you; the new names work too. Unknown names and wrong value types are logged and skipped. `time_of_day` is applied when the world opens, only for the DevWorld and only while `doDaylightCycle` is off.
+
+The old `rule_daylight` style keys and `daylight_time` are still read and get rewritten to the new names.
+
+### Shared defaults
+
+Set the `DEVWORLD_CONFIG` environment variable to the URL of a JSON file in the same format and it is used as the defaults, so a team can share one config. Your local `config/devworld.json` still wins. The title screen shows a green line in the top left when the file loaded, and a red one when it did not.
+
+## Building
+
+Gradle needs JDK 25 (Loom 1.18). The game itself builds against Java 17 or 21 depending on the version.
+
+```
+./gradlew buildAndCollect
+```
+
+Jars land in `build/libs/{version}/`. `./gradlew publish` writes the Maven artifacts to the folder in the `local_maven` environment variable, and `./gradlew publishMods` is a dry run until `PUBLISH_MODS=true` is set. The project uses Stonecutter, so a new Minecraft version is one `match(...)` line in `settings.gradle.kts` and a block in `stonecutter.properties.toml`. Run `"Set active project to <node>"` to switch which version your IDE sees.
 
 ## License
 
-Mod source code is licensed under the [GNU AFFERO GENERAL PUBLIC LICENSE](https://www.gnu.org/licenses/agpl-3.0.en.html). Click the link for more information
-
-Mod assets are licensed under the [Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/). Click the link for more information
+Source is [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.en.html). Assets are [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).

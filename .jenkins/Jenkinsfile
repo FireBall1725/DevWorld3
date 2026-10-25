@@ -1,9 +1,11 @@
 #!/usr/bin/env groovy
 
+// Run by Jared's Jenkins, which sets local_maven to the folder his maven serves.
+// Gradle itself needs a JDK 25 (Loom 1.18); the Java 17 and 21 toolchains for the game are fetched by Gradle.
 pipeline {
     agent any
     tools {
-        jdk "jdk-17.0.1"
+        jdk "jdk-25"
     }
     stages {
         stage('Clean') {

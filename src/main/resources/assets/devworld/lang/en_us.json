@@ -5,5 +5,8 @@
 
   "devworld.title": "DevWorld 3",
 
-  "devworld.hover.delete": "Press [LEFT SHIFT] two times to enable delete"
+  "devworld.hover.delete": "Press [LEFT SHIFT] two times to enable delete",
+
+  "devworld.config.external": "Dev World: external config loaded (%s)",
+  "devworld.config.external_failed": "Dev World: external config failed to load, see the log"
 }
