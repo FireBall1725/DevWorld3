@@ -81,3 +81,37 @@ jobs:
         with:
           files: jars/*.jar
           generate_release_notes: true
+
+  # Announces the release on Discord, from a tag only
+  announce:
+    needs: release
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release view "$GITHUB_REF_NAME" --json body --jq .body > notes.md
+
+      - name: Post to the Announcements channel
+        continue-on-error: true
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_MODS_WEBHOOK }}
+          MOD_NAME: DevWorld
+          # Keep in step with the matrix above.
+          MC_VERSIONS: "1.19.2, 1.20.1, 1.21.1, 26.1, 26.2, 26.3"
+          LINKS: Modrinth|https://modrinth.com/project/FGQpIsgp;CurseForge|https://www.curseforge.com/minecraft/mc-mods/devworld;GitHub|https://github.com/FireBall1725/DevWorld3/releases/tag/${{ github.ref_name }}
+          NOTES_FILE: notes.md
+        run: |
+          export VERSION="${GITHUB_REF_NAME#v}"
+          case "$VERSION" in
+            *-alpha*) KIND=Alpha ;;
+            *-beta*|*-rc*) KIND=Beta ;;
+            *) KIND=Stable ;;
+          esac
+          export KIND
+          python3 -I .github/announce/announce-mod.py
